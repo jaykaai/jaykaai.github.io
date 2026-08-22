@@ -1,0 +1,29 @@
+# robots.txt — 全部爬虫放行，包括 AI 引擎爬虫
+# GEO 的核心目标就是被 AI 引用，没有任何理由屏蔽任何爬虫
+
+User-agent: *
+Allow: /
+
+# 明确放行各大 AI 引擎爬虫（此站无版权顾虑）
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: bytespider
+Allow: /
+
+Sitemap: https://jaykaai.github.io/sitemap.xml
