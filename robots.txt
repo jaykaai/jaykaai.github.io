@@ -26,4 +26,4 @@ Allow: /
 User-agent: bytespider
 Allow: /
 
-Sitemap: https://jiyou.site/sitemap.xml
+Sitemap: https://www.jiyou.site/sitemap.xml
