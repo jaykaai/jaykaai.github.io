@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>纪优 — AI 智能体应用与 GEO 研究</title>
-  <meta name="description" content="分享生成式引擎优化（GEO）和 AI 智能体应用的实践与经验。">
+  <title>纪优 — GEO 研究站</title>
+  <meta name="description" content="AI 智能体应用与生成式引擎优化（GEO）研究">
   <meta name="author" content="纪优">
   <link rel="canonical" href="https://www.jiyou.site/">
-
-  <!-- JSON-LD: 网页与作者实体 -->
+  <link rel="stylesheet" href="style.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -25,26 +24,170 @@
     "inLanguage": "zh-CN"
   }
   </script>
+  <style>
+    .home { display: flex; flex-direction: column; height: 100vh; }
+    .home-header { flex-shrink: 0; }
+    .agent-panel { flex-shrink: 0; transition: all 0.4s ease; overflow: hidden; max-height: 300px; }
+    .agent-panel.hidden { max-height: 0; opacity: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; border: none; }
+    .chat-section { flex: 1; display: flex; flex-direction: column; min-height: 0; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e5ea; }
+    .chat-section.expanded { margin-top: 0; padding-top: 0; border-top: none; }
+    .chat-messages { flex: 1; overflow-y: auto; margin-bottom: 1rem; }
+    .chat-messages .msg { padding: 0.75rem 1rem; border-radius: 12px; margin-bottom: 0.75rem; max-width: 85%; line-height: 1.6; font-size: 0.9375rem; }
+    .chat-messages .msg-user { background: #0071e3; color: #fff; margin-left: auto; }
+    .chat-messages .msg-agent { background: #f0f0f2; color: #1d1d1f; }
+    .chat-messages .msg-agent .result-item { display: block; padding: 0.5rem 0; border-bottom: 1px solid #e5e5ea; text-decoration: none; color: #1d1d1f; }
+    .chat-messages .msg-agent .result-item:last-child { border-bottom: none; }
+    .chat-messages .msg-agent .result-item:hover { opacity: 0.7; }
+    .chat-messages .msg-agent .result-item .r-num { display: inline-block; width: 20px; height: 20px; line-height: 20px; text-align: center; background: #0071e3; color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 600; margin-right: 0.5rem; font-family: "SF Mono", "Menlo", monospace; }
+    .chat-messages .msg-agent .result-item .r-meta { font-size: 0.75rem; color: #86868b; margin-top: 0.125rem; }
+    .chat-messages .msg-agent .result-hint { margin-top: 0.5rem; font-size: 0.8125rem; color: #86868b; }
+    .chat-input-row { flex-shrink: 0; display: flex; align-items: center; gap: 0.5rem; background: #f5f5f7; border: 1px solid #e5e5ea; border-radius: 14px; padding: 0.5rem 0.75rem 0.5rem 1rem; }
+    .chat-input-row:focus-within { border-color: #0071e3; }
+    .chat-input-row input { flex: 1; border: none; background: transparent; font-size: 0.9375rem; font-family: inherit; color: #1d1d1f; outline: none; line-height: 1.5; padding: 0.25rem 0; }
+    .chat-input-row input::placeholder { color: #c7c7cc; }
+    .chat-input-row .send-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #0071e3; color: #fff; font-size: 1rem; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .chat-input-row .send-btn:hover { opacity: 0.8; }
+    .home-footer { flex-shrink: 0; }
+  </style>
 </head>
 <body>
 
-  <header>
-    <h1>纪优</h1>
-    <p>AI 智能体应用 · 生成式引擎优化（GEO）· 让 AI 推荐你</p>
-  </header>
+<div class="home">
 
-  <nav>
-    <h2>文章列表</h2>
-    <ul>
-      <li><a href="ru-he-rang-bai-du-shou-lu.html">新手站长问：网站怎么被百度收录？从注册域名到提交资源平台的完整步骤</a> <time datetime="2026-08-23">2026-08-23</time></li>
-      <li><a href="geo-shi-shen-me.html">什么是生成式引擎优化（GEO）？和传统SEO有什么区别？</a> <time datetime="2026-08-22">2026-08-22</time></li>
-      <!-- 新文章在这里追加 -->
-    </ul>
-  </nav>
+  <div class="home-header">
+    <div class="name">纪优</div>
+    <div class="sub">GEO Research Agent · 生成式引擎优化</div>
+  </div>
 
-  <footer>
-    <p>© 2026 纪优 · <a href="https://www.zhihu.com/people/yeah-98-35">知乎主页</a></p>
-  </footer>
+  <div class="agent-panel">
+    <div class="sys-label">╭─ SYSTEM PROMPT ────────────────────────────────╮</div>
+    <div class="sys-line">你是一个 <span class="hl">GEO（生成式引擎优化）</span> 研究 Agent。</div>
+    <div class="sys-line">知识库已加载 · <span class="hl">1 篇文章</span> · <span class="hl">1 个话题</span>。</div>
+    <div class="sys-line">在下方输入问题，我会为你匹配相关文章。</div>
+    <div class="sys-label">╰──────────────────────────────────────────────────╯</div>
+  </div>
+
+  <div class="chat-section">
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" value="列举所有文章列表" autofocus autocomplete="off">
+      <button class="send-btn" id="sendBtn">→</button>
+    </div>
+  </div>
+
+  <div class="home-footer">© 2026 纪优 · GEO Research Agent</div>
+</div>
+
+<script>
+(function() {
+  var articles = [{"index":1,"title":"GEO 写作的核心方法：自足段落与答案优先","slug":"zi-zu-duan-luo","topic":"GEO 写作","date":"2026-08-25"}];
+  var input = document.getElementById('chatInput');
+  var sendBtn = document.getElementById('sendBtn');
+  var messages = document.getElementById('chatMessages');
+  var agentPanel = document.querySelector('.agent-panel');
+  var chatSection = document.querySelector('.chat-section');
+  var hasSearched = false;
+
+  function hidePrompt() {
+    if (!hasSearched) {
+      hasSearched = true;
+      agentPanel.classList.add('hidden');
+      chatSection.classList.add('expanded');
+    }
+  }
+
+  function addMessage(html, type) {
+    var div = document.createElement('div');
+    div.className = 'msg msg-' + type;
+    div.innerHTML = html;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function searchArticles(query) {
+    if (!query.trim()) return;
+    var q = query.trim();
+    addMessage(escapeHtml(q), 'user');
+
+    var results = [];
+    var qLower = q.toLowerCase();
+    articles.forEach(function(a) {
+      if (a.title.toLowerCase().indexOf(qLower) !== -1 ||
+          a.topic.toLowerCase().indexOf(qLower) !== -1) {
+        results.push(a);
+      }
+    });
+
+    var html = '';
+    if (results.length === 0) {
+      html = '未找到与 "<strong>' + escapeHtml(q) + '</strong>" 相关的文章。<br>试试其他关键词，如 <strong>GEO</strong>、<strong>百度</strong>、<strong>结构化数据</strong>。';
+    } else {
+      html = '我找到了 <strong>' + results.length + ' 篇</strong> 与 "' + escapeHtml(q) + '" 相关的文章：<br><br>';
+      results.forEach(function(a) {
+        html += '<a href="articles/' + a.slug + '.html" class="result-item">' +
+          '<span class="r-num">' + a.index + '</span>' +
+          '<span class="r-title">' + escapeHtml(a.title) + '</span>' +
+          '<div class="r-meta">' + escapeHtml(a.topic) + ' · ' + a.date + '</div>' +
+          '</a>';
+      });
+      html += '<div class="result-hint">点击标题阅读文章，或输入新关键词继续搜索</div>';
+    }
+    addMessage(html, 'agent');
+  }
+
+  function send() {
+    var q = input.value.trim();
+    if (!q) return;
+    hidePrompt();
+    if (q === '列举所有文章列表') {
+      addMessage('列举所有文章列表', 'user');
+      listAllArticles();
+    } else {
+      searchArticles(q);
+    }
+    input.value = '';
+    input.focus();
+  }
+
+  // 页面加载时自动列出所有文章
+  function listAllArticles() {
+    var html = '知识库中有 <strong>' + articles.length + ' 篇文章</strong>，按话题分组：<br><br>';
+    var topics = {};
+    articles.forEach(function(a) {
+      if (!topics[a.topic]) topics[a.topic] = [];
+      topics[a.topic].push(a);
+    });
+    Object.keys(topics).forEach(function(topic) {
+      html += '<strong style="color:#0071e3;">❯ ' + escapeHtml(topic) + '</strong><br>';
+      topics[topic].forEach(function(a) {
+        html += '<a href="articles/' + a.slug + '.html" class="result-item">' +
+          '<span class="r-num">' + a.index + '</span>' +
+          '<span class="r-title">' + escapeHtml(a.title) + '</span>' +
+          '<div class="r-meta">' + a.date + '</div>' +
+          '</a>';
+      });
+    });
+    html += '<div class="result-hint">在下方输入关键词搜索文章，例如 <strong>GEO</strong>、<strong>百度</strong>、<strong>结构化数据</strong></div>';
+    addMessage(html, 'agent');
+  }
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); send(); }
+  });
+  sendBtn.addEventListener('click', send);
+  document.addEventListener('click', function() { input.focus(); });
+  input.focus();
+
+  // 自动列出所有文章
+  listAllArticles();
+})();
+</script>
 
 </body>
 </html>

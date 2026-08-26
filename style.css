@@ -1,0 +1,337 @@
+/* ============================================
+   style.css — 纪优 GEO 网站样式
+   Apple 终端 × AI Agent 风格
+   ============================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  line-height: 1.6;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ========== 首页 ========== */
+.home {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 4rem 2rem 5rem;
+}
+
+/* 标题 */
+.home-header { margin-bottom: 3rem; }
+.home-header .name {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #1d1d1f;
+  line-height: 1.1;
+}
+.home-header .sub {
+  font-size: 1.0625rem;
+  color: #86868b;
+  margin-top: 0.5rem;
+}
+
+/* Agent 系统提示框 */
+.agent-panel {
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.agent-panel .sys-label {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #86868b;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+.agent-panel .sys-line {
+  font-size: 0.9375rem;
+  color: #515154;
+  line-height: 1.8;
+  font-family: "SF Mono", "Menlo", monospace;
+}
+.agent-panel .sys-line + .sys-line { margin-top: 0.25rem; }
+.agent-panel .sys-line .hl { color: #1d1d1f; font-weight: 600; }
+.agent-panel .sys-line .cmd { color: #0071e3; }
+
+/* 话题分组 */
+.topic-group { margin-bottom: 0; }
+
+.topic-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0 0.75rem;
+  font-family: "SF Mono", "Menlo", monospace;
+}
+.topic-header:first-of-type { padding-top: 0; }
+.topic-header .arrow { color: #28c840; font-size: 1rem; }
+.topic-header .label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #86868b;
+  letter-spacing: 0.02em;
+}
+
+.topic-item {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e5e5ea;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.topic-item:last-of-type { border-bottom: none; }
+.topic-item:hover { opacity: 0.7; }
+.topic-item .q { color: #0071e3; font-size: 0.875rem; flex-shrink: 0; }
+.topic-item .title {
+  flex: 1;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: #1d1d1f;
+  line-height: 1.4;
+}
+.topic-item .date {
+  font-size: 0.8125rem;
+  color: #c7c7cc;
+  flex-shrink: 0;
+}
+
+/* 底部提示符（已替换为 AI 搜索对话，见 index.html 内联样式）
+.prompt-area {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e5ea;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 1rem;
+}
+.prompt-area .chevron { color: #28c840; }
+.prompt-area .cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background: #1d1d1f;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.prompt-hint {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: #86868b;
+}
+.prompt-hint code {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 0.8125rem;
+  color: #0071e3;
+  background: rgba(0,113,227,0.08);
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+}
+
+.home-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e5ea;
+  font-size: 0.8125rem;
+  color: #c7c7cc;
+}
+
+/* ========== 文章页 ========== */
+.article-wrapper {
+  max-width: 960px;
+  margin: 2rem auto 6rem;
+  padding: 0 2rem;
+}
+
+.article-card {
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+/* 顶部终端条 */
+.article-topbar {
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid #f0f0f2;
+  background: #fafafa;
+}
+.article-topbar .dots { display: flex; gap: 7px; }
+.article-topbar .dot { width: 11px; height: 11px; border-radius: 50%; }
+.article-topbar .dot.r { background: #ff5f57; }
+.article-topbar .dot.y { background: #febc2e; }
+.article-topbar .dot.g { background: #28c840; }
+.article-topbar .path {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 0.8125rem;
+  color: #86868b;
+}
+.article-topbar .path .dir { color: #0071e3; }
+.article-topbar .path .file { color: #1d1d1f; }
+
+/* 正文 */
+.article-body { padding: 3.5rem 3rem; }
+
+.article-body h1 {
+  font-size: 2.125rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  color: #1d1d1f;
+}
+.article-body h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 3rem;
+  margin-bottom: 0.75rem;
+  color: #1d1d1f;
+  letter-spacing: -0.01em;
+}
+.article-body h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: #1d1d1f;
+}
+.article-body p {
+  margin-bottom: 1.25rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: #333336;
+}
+.article-body strong { font-weight: 600; color: #1d1d1f; }
+.article-body a { color: #0071e3; text-decoration: none; }
+.article-body a:hover { text-decoration: underline; }
+.article-body ul, .article-body ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+  color: #333336;
+}
+.article-body li { margin-bottom: 0.5rem; }
+
+.article-body blockquote {
+  margin: 2rem 0;
+  padding: 1.25rem 1.5rem;
+  border-left: 4px solid #0071e3;
+  background: #f5f5f7;
+  border-radius: 12px;
+  color: #515154;
+}
+.article-body blockquote p { margin-bottom: 0; }
+
+/* 代码块 — Apple Xcode 风格 */
+.article-body pre {
+  margin: 2rem 0;
+  padding: 1.5rem 1.75rem;
+  background: #1d1d1f;
+  border-radius: 14px;
+  overflow-x: auto;
+}
+.article-body pre code {
+  font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #f5f5f7;
+}
+.article-body pre::before {
+  display: block; content: "";
+  margin-bottom: 0.75rem;
+  width: 52px; height: 12px;
+  background:
+    radial-gradient(circle at 6px 6px, #ff5f57 6px, transparent 6px),
+    radial-gradient(circle at 26px 6px, #febc2e 6px, transparent 6px),
+    radial-gradient(circle at 46px 6px, #28c840 6px, transparent 6px);
+}
+.article-body code {
+  font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", monospace;
+  font-size: 0.875em;
+  background: rgba(0,0,0,0.06);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  color: #1d1d1f;
+}
+
+/* 表格 */
+.article-body table {
+  width: 100%;
+  margin: 2rem 0;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.article-body th {
+  background: #f5f5f7;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+.article-body th, .article-body td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e5ea;
+}
+.article-body tr:last-child td { border-bottom: none; }
+
+/* 图片 */
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 2rem 0;
+  display: block;
+}
+
+/* 分割线 */
+.article-body hr {
+  border: none;
+  border-top: 1px solid #e5e5ea;
+  margin: 2rem 0;
+}
+
+/* 底部 */
+.article-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f0f0f2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: #86868b;
+  background: #fafafa;
+}
+.article-footer a { color: #0071e3; text-decoration: none; }
+.article-footer .mono { font-family: "SF Mono", "Menlo", monospace; }
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .home { padding: 2.5rem 1.25rem 3rem; }
+  .home-header .name { font-size: 2rem; }
+  .article-body { padding: 1.5rem 1.25rem; }
+  .article-body h1 { font-size: 1.5rem; }
+  .article-body p { font-size: 1rem; }
+  .article-wrapper { padding: 0 1rem; }
+  .topic-item { flex-wrap: wrap; gap: 0.25rem; }
+  .topic-item .date { width: 100%; padding-left: 1.5rem; }
+}
