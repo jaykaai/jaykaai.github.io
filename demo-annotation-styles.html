@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>批注呈现风格 Demo — 纪优 GEO</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ===== Demo 页面专用样式 ===== */
+.demo-wrap { max-width: 960px; margin: 2rem auto 6rem; padding: 0 2rem; }
+.demo-intro {
+  background: #fff; border: 1px solid #e5e5ea; border-radius: 16px;
+  padding: 2rem 2.5rem; margin-bottom: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.demo-intro h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.demo-intro p { color: #515154; font-size: 0.9375rem; line-height: 1.7; }
+.demo-intro .nav { margin-top: 1.25rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.demo-intro .nav a {
+  font-size: 0.8125rem; font-family: "SF Mono","Menlo",monospace;
+  color: #0071e3; background: rgba(0,113,227,0.08); padding: 0.375rem 0.75rem;
+  border-radius: 8px; text-decoration: none;
+}
+
+.style-section {
+  background: #fff; border: 1px solid #e5e5ea; border-radius: 16px;
+  overflow: hidden; margin-bottom: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.style-section .topbar {
+  padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+  border-bottom: 1px solid #f0f0f2; background: #fafafa;
+}
+.style-section .topbar .dots { display: flex; gap: 7px; }
+.style-section .topbar .dot { width: 11px; height: 11px; border-radius: 50%; }
+.style-section .topbar .dot.r { background: #ff5f57; }
+.style-section .topbar .dot.y { background: #febc2e; }
+.style-section .topbar .dot.g { background: #28c840; }
+.style-section .topbar .label {
+  font-family: "SF Mono","Menlo",monospace; font-size: 0.8125rem; color: #86868b;
+}
+.style-section .topbar .label strong { color: #1d1d1f; }
+.style-section .body { padding: 2.5rem 3rem; }
+.style-section .body > p.lead { color: #86868b; font-size: 0.875rem; margin-bottom: 1.5rem; font-family: "SF Mono","Menlo",monospace; }
+
+/* ===== 风格 1：红笔批改对比块 ===== */
+.annotate-card {
+  border: 1px solid #e5e5ea; border-radius: 12px; overflow: hidden; margin: 1.5rem 0;
+}
+.annotate-card .tag-bar {
+  display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1rem;
+  background: #f5f5f7; border-bottom: 1px solid #e5e5ea; flex-wrap: wrap;
+}
+.annotate-card .tag {
+  font-family: "SF Mono","Menlo",monospace; font-size: 0.75rem; font-weight: 600;
+  padding: 0.25rem 0.625rem; border-radius: 6px;
+}
+.annotate-card .tag.lesson { background: #0071e3; color: #fff; }
+.annotate-card .tag.rule { background: rgba(0,113,227,0.1); color: #0071e3; }
+.annotate-card .row { padding: 1rem 1.25rem; display: flex; gap: 0.75rem; align-items: flex-start; }
+.annotate-card .row.before { background: #fff5f5; border-bottom: 1px solid #ffe0e0; }
+.annotate-card .row.after { background: #f0fff4; }
+.annotate-card .mark {
+  font-family: "SF Mono","Menlo",monospace; font-size: 0.875rem; font-weight: 700;
+  flex-shrink: 0; width: 1.5rem; text-align: center;
+}
+.annotate-card .row.before .mark { color: #ff5f57; }
+.annotate-card .row.after .mark { color: #28c840; }
+.annotate-card .text { font-size: 0.9375rem; line-height: 1.75; color: #1d1d1f; }
+.annotate-card .row.before .text { text-decoration: line-through; text-decoration-color: #ff5f57; color: #86868b; }
+.annotate-card .why {
+  padding: 0.75rem 1.25rem 1rem; font-size: 0.875rem; color: #515154;
+  background: #fafafa; border-top: 1px solid #f0f0f2; line-height: 1.6;
+}
+.annotate-card .why::before { content: "📌 为什么 "; font-weight: 600; }
+
+/* ===== 风格 2：行内批注 margin notes ===== */
+.margin-layout { position: relative; display: grid; grid-template-columns: 1fr 200px; gap: 1.5rem; margin: 1.5rem 0; }
+.margin-body p { font-size: 0.9375rem; line-height: 1.8; color: #1d1d1f; margin-bottom: 1.25rem; }
+.margin-body .hl { background: rgba(255,245,0,0.25); padding: 0.05em 0.15em; border-radius: 2px; }
+.margin-notes { border-left: 2px solid #0071e3; padding-left: 1rem; }
+.margin-note {
+  margin-bottom: 1.5rem; font-size: 0.8125rem; line-height: 1.6;
+  opacity: 0; /* 用 JS/锚点对齐时才显示，这里 demo 直接显示 */
+}
+.margin-note { opacity: 1; }
+.margin-note .nlabel {
+  font-family: "SF Mono","Menlo",monospace; font-weight: 700; color: #0071e3;
+  font-size: 0.75rem; display: block; margin-bottom: 0.25rem;
+}
+.margin-note .ntext { color: #515154; }
+@media (max-width: 720px) {
+  .margin-layout { grid-template-columns: 1fr; }
+  .margin-notes { border-left: none; border-top: 1px solid #e5e5ea; padding-left: 0; padding-top: 1rem; }
+}
+
+/* ===== 风格 3：时间线式演进 ===== */
+.timeline { margin: 1.5rem 0; }
+.timeline .t-title { font-size: 1.0625rem; font-weight: 600; margin-bottom: 1.25rem; color: #1d1d1f; }
+.timeline .t-item {
+  position: relative; padding-left: 2rem; padding-bottom: 2rem; border-left: 2px solid #e5e5ea;
+}
+.timeline .t-item:last-child { border-left-color: transparent; padding-bottom: 0; }
+.timeline .t-item::before {
+  content: ""; position: absolute; left: -7px; top: 0; width: 12px; height: 12px;
+  border-radius: 50%; background: #fff; border: 2px solid #0071e3;
+}
+.timeline .t-item.current::before { background: #0071e3; }
+.timeline .t-ver {
+  font-family: "SF Mono","Menlo",monospace; font-size: 0.8125rem; font-weight: 600;
+  color: #0071e3; margin-bottom: 0.5rem;
+}
+.timeline .t-text {
+  font-size: 0.9375rem; line-height: 1.75; color: #1d1d1f;
+  background: #f5f5f7; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem;
+}
+.timeline .t-method {
+  font-size: 0.8125rem; color: #86868b; display: flex; gap: 0.5rem; flex-wrap: wrap;
+}
+.timeline .t-method .chip {
+  font-family: "SF Mono","Menlo",monospace; font-size: 0.6875rem; font-weight: 600;
+  padding: 0.2rem 0.5rem; border-radius: 5px; background: rgba(0,113,227,0.1); color: #0071e3;
+}
+</style>
+</head>
+<body>
+
+<div class="demo-wrap">
+
+  <div class="demo-intro">
+    <h1>批注呈现风格 Demo</h1>
+    <p>同一组真实批改内容（取自《自足段落》一文的开头句演变），三种呈现风格对比。选一个喜欢的，我去改 build.js 让 Markdown 里能直接写。</p>
+    <div class="nav">
+      <a href="#style1">风格 1 · 红笔对比块</a>
+      <a href="#style2">风格 2 · 行内批注</a>
+      <a href="#style3">风格 3 · 时间线演进</a>
+    </div>
+  </div>
+
+  <!-- ===== 风格 1 ===== -->
+  <div class="style-section" id="style1">
+    <div class="topbar">
+      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+      <div class="label">风格 1 · <strong>红笔批改对比块</strong> — 像老师批改作业</div>
+    </div>
+    <div class="body">
+      <p class="lead">// 每个批注点 = 一个卡片，原文红 + 改后绿 + 规则标签</p>
+
+      <div class="annotate-card">
+        <div class="tag-bar">
+          <span class="tag lesson">第1课</span>
+          <span class="tag rule">自足段落 · 补主语全称</span>
+        </div>
+        <div class="row before">
+          <span class="mark">✕</span>
+          <div class="text">AI 搜索引擎引用你的内容时，不会从标题到结尾完整搬运。</div>
+        </div>
+        <div class="row after">
+          <span class="mark">✓</span>
+          <div class="text">自足段落（self-contained passage）是一种被 AI 搜索引擎摘出后、脱离标题和上下文仍能独立读懂的段落写法。</div>
+        </div>
+        <div class="why">段落被 AI 摘出后脱离标题，首句必须自带主语全称，否则读者和 AI 都不知道"它"是谁。</div>
+      </div>
+
+      <div class="annotate-card">
+        <div class="tag-bar">
+          <span class="tag lesson">第4课</span>
+          <span class="tag rule">流畅度 · 长句拆短</span>
+        </div>
+        <div class="row before">
+          <span class="mark">✕</span>
+          <div class="text">AI 搜索引擎需要自足段落，是因为 AI 引擎在生成回答时只摘取你的某个段落，而非整篇文章，被摘出的段落脱离了你的标题和上下文。</div>
+        </div>
+        <div class="row after">
+          <span class="mark">✓</span>
+          <div class="text">AI 搜索引擎需要自足段落，是因为它在生成回答时只摘取你的某个段落，而非整篇文章。被摘出的段落脱离了你的标题和上下文。</div>
+        </div>
+        <div class="why">多个从句嵌套会被 AI 按句切分散掉语义，拆成两句保住每个单元的完整意思。</div>
+      </div>
+
+      <div class="annotate-card">
+        <div class="tag-bar">
+          <span class="tag lesson">第4课</span>
+          <span class="tag rule">流畅度 · 避免连续重复词</span>
+        </div>
+        <div class="row before">
+          <span class="mark">✕</span>
+          <div class="text">采用答案优先结构能让 AI 引擎在提取段落时优先读到结论，因为 AI 提取段落时优先读取段落开头的内容。</div>
+        </div>
+        <div class="row after">
+          <span class="mark">✓</span>
+          <div class="text">这样做的原因是：生成式引擎提取段落时，总是从段落开头读起。把结论放在第一句，它第一时间就拿到了答案。</div>
+        </div>
+        <div class="why">同一段"优先"出现三次、"AI 引擎"重复，换成代词和同义词，读起来不卡，AI 切分也抓得住主语。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 风格 2 ===== -->
+  <div class="style-section" id="style2">
+    <div class="topbar">
+      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+      <div class="label">风格 2 · <strong>行内批注 margin notes</strong> — 像书页边缘批注</div>
+    </div>
+    <div class="body">
+      <p class="lead">// 正文不拆，批注贴在侧边，窄屏折叠到底部</p>
+
+      <div class="margin-layout">
+        <div class="margin-body">
+          <p>自足段落（self-contained passage）是一种被 AI 搜索引擎摘出后、脱离标题和上下文<span class="hl">仍能独立读懂</span>的段落写法。AI 搜索引擎引用你的内容时，不会从标题到结尾完整搬运。</p>
+          <p>它从你的页面里摘出某个段落，拼进自己的回答。AI 搜索引擎需要自足段落，是因为它在生成回答时只摘取你的某个段落，<span class="hl">而非整篇文章</span>。被摘出的段落脱离了你的标题和上下文。</p>
+          <p>采用答案优先结构，原因是<span class="hl">生成式引擎提取段落时，总是从段落开头读起</span>。把结论放在第一句，它第一时间就拿到了答案。</p>
+        </div>
+        <div class="margin-notes">
+          <div class="margin-note">
+            <span class="nlabel">第1课 · 自足段落</span>
+            <span class="ntext">"仍能独立读懂"是自足段落的判定标准——脱离标题也成立。</span>
+          </div>
+          <div class="margin-note">
+            <span class="nlabel">第4课 · 长句拆短</span>
+            <span class="ntext">"而非整篇文章"后断句，原句三个从句嵌套，拆成两句。</span>
+          </div>
+          <div class="margin-note">
+            <span class="nlabel">第4课 · 换重复词</span>
+            <span class="ntext">原文"优先"三次，改用代词"它"和同义词。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 风格 3 ===== -->
+  <div class="style-section" id="style3">
+    <div class="topbar">
+      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+      <div class="label">风格 3 · <strong>时间线式演进</strong> — 一句话的成长史</div>
+    </div>
+    <div class="body">
+      <p class="lead">// 同一句按课次递进，看 GEO 方法怎么一步步改出来</p>
+
+      <div class="timeline">
+        <div class="t-title">「自足段落」开头句的演进</div>
+
+        <div class="t-item">
+          <div class="t-ver">第 1 版 · 初稿</div>
+          <div class="t-text">AI 搜索引擎引用你的内容时，不会从标题到结尾完整搬运。它从你的页面里摘出某个段落，拼进自己的回答。</div>
+          <div class="t-method"><span class="chip">无主语全称</span><span class="chip">第1课前</span></div>
+        </div>
+
+        <div class="t-item">
+          <div class="t-ver">第 2 版 · +第1课 自足段落</div>
+          <div class="t-text">自足段落（self-contained passage）是一种被 AI 搜索引擎摘出后、脱离标题和上下文仍能独立读懂的段落写法。</div>
+          <div class="t-method"><span class="chip">补主语全称</span><span class="chip">+缩写</span></div>
+        </div>
+
+        <div class="t-item">
+          <div class="t-ver">第 3 版 · +第4课 流畅度</div>
+          <div class="t-text">AI 搜索引擎需要自足段落，是因为它在生成回答时只摘取你的某个段落，而非整篇文章。被摘出的段落脱离了你的标题和上下文。</div>
+          <div class="t-method"><span class="chip">长句拆短</span><span class="chip">换重复词 AI引擎→它</span></div>
+        </div>
+
+        <div class="t-item current">
+          <div class="t-ver">当前版 · 定稿</div>
+          <div class="t-text">自足段落（self-contained passage）是一种被 AI 搜索引擎摘出后、脱离标题和上下文仍能独立读懂的段落写法。AI 搜索引擎引用你的内容时，不会从标题到结尾完整搬运。</div>
+          <div class="t-method"><span class="chip">第1课+第4课 合并</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
