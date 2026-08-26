@@ -133,5 +133,23 @@
   </div>
 </div>
 
+<script>
+function toggleAnno(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var mark = document.getElementById(id + '-mark');
+  var isShow = el.classList.contains('show');
+  document.querySelectorAll('.anno-bubble.show').forEach(function(b) {
+    b.classList.remove('show');
+    var m = document.getElementById(b.id + '-mark');
+    if (m) m.classList.remove('open');
+  });
+  if (!isShow) {
+    el.classList.add('show');
+    if (mark) mark.classList.add('open');
+  }
+}
+</script>
+
 </body>
 </html>
