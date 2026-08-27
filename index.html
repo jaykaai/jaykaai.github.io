@@ -11,17 +11,39 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
+    "@id": "https://www.jiyou.site/#website",
     "@type": "WebSite",
     "name": "纪优",
     "url": "https://www.jiyou.site/",
     "description": "AI 智能体应用与生成式引擎优化（GEO）研究",
-    "author": {
-      "@type": "Person",
-      "name": "纪优",
-      "url": "https://www.jiyou.site",
-      "sameAs": ["https://www.zhihu.com/people/yeah-98-35"]
-    },
+    "author": { "@id": "https://www.jiyou.site/#person" },
+    "publisher": { "@id": "https://www.jiyou.site/#organization" },
     "inLanguage": "zh-CN"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@id": "https://www.jiyou.site/#person",
+    "@type": "Person",
+    "name": "纪优",
+    "url": "https://www.jiyou.site",
+    "description": "AI 智能体应用与生成式引擎优化（GEO）研究者",
+    "sameAs": ["https://www.zhihu.com/people/yeah-98-35","https://github.com/jaykaai"],
+    "knowsAbout": ["生成式引擎优化","AI 智能体应用","结构化数据","搜索引擎优化"],
+    "worksFor": { "@id": "https://www.jiyou.site/#organization" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@id": "https://www.jiyou.site/#organization",
+    "@type": "Organization",
+    "name": "纪优",
+    "url": "https://www.jiyou.site",
+    "description": "AI 智能体应用与生成式引擎优化（GEO）研究者",
+    "sameAs": ["https://www.zhihu.com/people/yeah-98-35","https://github.com/jaykaai"],
+    "founder": { "@id": "https://www.jiyou.site/#person" }
   }
   </script>
   <style>
@@ -62,7 +84,7 @@
   <div class="agent-panel">
     <div class="sys-label">╭─ SYSTEM PROMPT ────────────────────────────────╮</div>
     <div class="sys-line">你是一个 <span class="hl">GEO（生成式引擎优化）</span> 研究 Agent。</div>
-    <div class="sys-line">知识库已加载 · <span class="hl">2 篇文章</span> · <span class="hl">1 个话题</span>。</div>
+    <div class="sys-line">知识库已加载 · <span class="hl">3 篇文章</span> · <span class="hl">2 个话题</span>。</div>
     <div class="sys-line">在下方输入问题，我会为你匹配相关文章。</div>
     <div class="sys-label">╰──────────────────────────────────────────────────╯</div>
   </div>
@@ -80,7 +102,7 @@
 
 <script>
 (function() {
-  var articles = [{"index":1,"title":"怎么让 AI 搜索引擎引用你的内容？三个方法","slug":"rang-ai-yin-yong-ni","topic":"GEO 写作","date":"2026-08-26"},{"index":2,"title":"GEO 写作的核心方法：自足段落与答案优先","slug":"zi-zu-duan-luo","topic":"GEO 写作","date":"2026-08-25"}];
+  var articles = [{"index":1,"title":"怎么让 AI 引擎认出\"你是谁\"？JSON-LD 实体图实战","slug":"shi-ti-tu","topic":"结构化数据","date":"2026-08-27"},{"index":2,"title":"怎么让 AI 搜索引擎引用你的内容？三个方法","slug":"rang-ai-yin-yong-ni","topic":"GEO 写作","date":"2026-08-26"},{"index":3,"title":"GEO 写作的核心方法：自足段落与答案优先","slug":"zi-zu-duan-luo","topic":"GEO 写作","date":"2026-08-25"}];
   var input = document.getElementById('chatInput');
   var sendBtn = document.getElementById('sendBtn');
   var messages = document.getElementById('chatMessages');
