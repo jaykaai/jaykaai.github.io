@@ -2,25 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.jiyou.site/</loc>
-    <lastmod>2026-08-22</lastmod>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.jiyou.site/structured-data-guide.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.jiyou.site/articles/ai-pa-chong-guan-li.html</loc>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.jiyou.site/geo-shi-shen-me.html</loc>
-    <lastmod>2026-08-22</lastmod>
+    <loc>https://www.jiyou.site/articles/llms-txt.html</loc>
+    <lastmod>2026-08-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.jiyou.site/ru-he-rang-bai-du-shou-lu.html</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.jiyou.site/articles/nei-rong-xin-xian-du.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.jiyou.site/articles/shi-ti-tu.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.jiyou.site/articles/rang-ai-yin-yong-ni.html</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.jiyou.site/articles/zi-zu-duan-luo.html</loc>
+    <lastmod>2026-08-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
