@@ -1,0 +1,13 @@
+# 纪优 GEO 研究
+
+> 纪优的生成式引擎优化（GEO）研究站。记录如何让 AI 引擎引用你的内容，含结构化数据、实体图、自足段落等实操方法。
+
+## 核心文章
+- [自足段落：怎么写才会被 AI 摘录](https://www.jiyou.site/articles/zi-zu-duan-luo.html): 答案优先、段落密度、可摘录性——让段落脱离标题后仍能独立成文被 AI 引用
+- [怎么让 AI 引用你](https://www.jiyou.site/articles/rang-ai-yin-yong-ni.html): 用统计数字、可查证专家引用、流畅度三规则提升被 AI 引用的概率
+- [怎么让 AI 引擎认出你是谁](https://www.jiyou.site/articles/shi-ti-tu.html): JSON-LD 实体图，用 @id 串联人物/机构/文章名片，解决实体消歧
+
+## 可选
+- [首页](https://www.jiyou.site/): AI 搜索对话式文章检索，输入关键词匹配相关文章
+- [知乎主页](https://www.zhihu.com/people/yeah-98-35): 纪优的知乎身份锚点，与自建站互为 sameAs 验证
+- [GitHub](https://github.com/jaykaai): 站点源码托管，代码贡献者身份锚点
