@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>怎么让 AI 引擎认出&quot;你是谁&quot;？JSON-LD 实体图实战</title>
-  <meta name="description" content="AI 引擎怎么把你在知乎、GitHub、自建站的&quot;纪优&quot;拼成同一个人？用 JSON-LD 实体图：@id 唯一标识 + sameAs 多平台锚点 + knowsAbout 稳定领域。附完整代码改造。">
+  <title>怎么让 AI 引擎认出&quot;你是谁&quot;？给网页加一张机器能读的名片</title>
+  <meta name="description" content="AI 引擎不认识你，它只读网页里的&quot;名片&quot;。用 JSON-LD 实体图给 AI 一张能拼起来的身份证：@id 是身份证号，sameAs 是多平台锚点，knowsAbout 是专业领域。零基础图解。">
   <meta name="author" content="纪优">
   <link rel="canonical" href="https://www.jiyou.site/articles/shi-ti-tu.html">
   <link rel="stylesheet" href="../style.css">
@@ -13,8 +13,8 @@
   "@context": "https://schema.org",
   "@id": "https://www.jiyou.site/articles/shi-ti-tu.html#article",
   "@type": "Article",
-  "headline": "怎么让 AI 引擎认出\"你是谁\"？JSON-LD 实体图实战",
-  "description": "AI 引擎怎么把你在知乎、GitHub、自建站的\"纪优\"拼成同一个人？用 JSON-LD 实体图：@id 唯一标识 + sameAs 多平台锚点 + knowsAbout 稳定领域。附完整代码改造。",
+  "headline": "怎么让 AI 引擎认出\"你是谁\"？给网页加一张机器能读的名片",
+  "description": "AI 引擎不认识你，它只读网页里的\"名片\"。用 JSON-LD 实体图给 AI 一张能拼起来的身份证：@id 是身份证号，sameAs 是多平台锚点，knowsAbout 是专业领域。零基础图解。",
   "author": {
     "@id": "https://www.jiyou.site/#person"
   },
@@ -82,18 +82,18 @@
     },
     {
       "@type": "Question",
-      "name": "为什么 sameAs 要填真实拥有的平台？",
+      "name": "为什么 sameAs 只能填真实拥有的平台？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "为什么 sameAs 要填真实拥有的平台？"
+        "text": "sameAs 是身份验证锚点，AI 会顺着这些网址去验证身份是否一致。填一个你确实拥有、且资料和自建站一致的页面，是一次成功的身份验证，增加你的可信度。填一个打不开的、或资料对不上的页面，是一次失败的身份验证，反而稀释可信度。"
       }
     },
     {
       "@type": "Question",
-      "name": "knowsAbout 和文章 tag 有什么区别？",
+      "name": "knowsAbout 和文章标签有什么区别？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "knowsAbout 和文章 tag 有什么区别？"
+        "text": "knowsAbout 和文章标签有什么区别？"
       }
     }
   ]
@@ -114,246 +114,214 @@
       <div class="path">
         <span class="dir">❯ 结构化数据</span>
         <span style="color:#c7c7cc;"> / </span>
-        <span class="file">怎么让 AI 引擎认出&quot;你是谁&quot;？JSON-LD 实体图实战</span>
+        <span class="file">怎么让 AI 引擎认出&quot;你是谁&quot;？给网页加一张机器能读的名片</span>
       </div>
     </div>
 
     <div class="article-body">
-      <h1>怎么让 AI 引擎认出&quot;你是谁&quot;？JSON-LD 实体图实战</h1>
-      <p>实体消歧（Entity Disambiguation）是一种让 AI 引擎把你在不同平台、不同页面里的身份信息拼成同一个实体的结构化数据写法。AI 引擎（秘塔、Kimi、豆包、Perplexity）在回答&quot;纪优是谁&quot;时，不会只读你自建站的关于页——它从知乎主页、GitHub 资料、文章页的作者字段里各取一块，尝试拼图。如果这些碎片的身份标识对不上，AI 会把它们当成几个不同的人。实体图用三个东西解决这个问题：<code>@id</code> 唯一标识符、<code>sameAs</code> 多平台锚点、<code>knowsAbout</code> 稳定知识领域。</p>
-<p>本文记录一次真实的代码改造：把一个自建站的 JSON-LD 从&quot;每页重复内联作者对象&quot;升级为&quot;用 <code>@id</code> 串起来的实体图&quot;。改造对象是一个 Node.js 构建脚本（<code>build.js</code>），它把 Markdown 文章转成 HTML，并自动生成 JSON-LD。</p>
-<h2>为什么 AI 引擎需要实体消歧？</h2>
-<p>AI 引擎生成回答时，会从多个来源综合信息。你的身份信息散落在至少四个地方：自建站首页、自建站文章页的作者字段、知乎主页、GitHub 资料。如果每个地方的 JSON-LD 都把作者写成一个独立的内联对象，AI 看到的是四组字段相似但无法确认是否指向同一个人的数据。</p>
-<p>传统写法（每页内联一份作者对象）的问题在于：每个 Person 对象都是孤立的，AI 没有&quot;这是同一个人&quot;的硬证据。它只能靠名字字符串匹配——但叫&quot;纪优&quot;的人可能不止一个。实体消歧的核心是给实体一个全局唯一的 <code>@id</code>，让 AI 跨页面、跨数据源时能确认&quot;这个 <code>@id</code> 指向的是同一个人&quot;。</p>
-<p>Schema.org 的实体消歧机制依赖三个字段配合工作。<code>@id</code> 是实体的唯一身份证号，用稳定 URL 形式（如 <code>https://www.jiyou.site/#person</code>）。<code>sameAs</code> 声明这个实体在其他平台的对应身份，是跨平台拼图的锚点。<code>knowsAbout</code> 声明实体的稳定专业领域，帮 AI 判断这个人在什么话题上有发言权。三者配合，AI 引擎才能把散落的身份碎片拼成一张完整的实体图。</p>
-<h2>改造前：每页重复内联的孤立对象</h2>
-<p>改造前，构建脚本为每篇文章生成两个 JSON-LD 块：一个 Article，一个 Person。Person 是直接内联在每篇文章页里的，每次都重新写一遍所有字段。</p>
-<pre><code class="language-javascript">const articleJsonLd = JSON.stringify({
-  &#39;@context&#39;: &#39;https://schema.org&#39;,
-  &#39;@type&#39;: &#39;Article&#39;,
-  headline: article.title,
-  description: article.description || &#39;&#39;,
-  // 改造前：author 是一个完整的内联对象，每篇文章都重复定义
-  author: { &#39;@type&#39;: &#39;Person&#39;, name: AUTHOR_NAME, url: AUTHOR_URL },
-  publisher: { &#39;@type&#39;: &#39;Organization&#39;, name: AUTHOR_NAME, url: AUTHOR_URL },
-  datePublished: article.date,
-  dateModified: article.date,
-  inLanguage: &#39;zh-CN&#39;,
-  mainEntityOfPage: `${SITE_URL}/articles/${article.slug}.html`,
-}, null, 2);
-
-const personJsonLd = JSON.stringify({
-  &#39;@context&#39;: &#39;https://schema.org&#39;,
-  &#39;@type&#39;: &#39;Person&#39;,
-  name: AUTHOR_NAME,
-  url: AUTHOR_URL,
-  description: &#39;AI 智能体应用与生成式引擎优化（GEO）研究者&#39;,
-  sameAs: [AUTHOR_SAMEAS],   // Bug：AUTHOR_SAMEAS 已是数组，再包一层变成嵌套数组
-  knowsAbout: article.tags || [],  // 问题：知识领域随每篇文章的 tag 变动
-}, null, 2);
+      <h1>怎么让 AI 引擎认出&quot;你是谁&quot;？给网页加一张机器能读的名片</h1>
+      <p>你在知乎有主页，在 GitHub 有资料页，在自建站有关于页。你都知道这是同一个人——都是&quot;纪优&quot;。但 AI 引擎（秘塔、Kimi、豆包、Perplexity）不知道。它看到的是三个不同网站上、三个独立的页面，没有任何信息明确告诉它&quot;这三个都是同一个人&quot;。</p>
+<p>实体消歧（Entity Disambiguation）就是解决这个问题的：给 AI 一张机器能读懂的&quot;身份证&quot;，让它把散落在各处的&quot;纪优&quot;拼成同一个人。拼对了，AI 会把你当作可信来源；拼不对，你在 AI 眼里就是&quot;身份不明的人&quot;，不会在回答里引用你。</p>
+<p>本文记录一次真实的改造：把一个自建站的网页&quot;名片&quot;从&quot;每页各写一份、互不相认&quot;升级成&quot;用身份证号串起来的整体&quot;。改造对象是一个自动生成网页的小脚本，但原理对所有网站都成立——你哪怕用 WordPress、用知乎专栏，理解了原理一样能用。</p>
+<h2>先搞懂：AI 怎么读你的网页</h2>
+<p>人看网页，看到的是排版好的文字和图片。AI 看网页，看的是网页背后的一段段&quot;机器名片&quot;。这段名片叫 JSON-LD，藏在一个叫 <code>&lt;script&gt;</code> 的标签里，人眼通常看不到，但 AI 和搜索引擎专门去读它。</p>
+<p>JSON-LD 长这样——本质上就是一段用花括号 <code>{}</code> 包起来的、按&quot;键: 值&quot;格式写的说明：</p>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;Person&quot;,
+  &quot;name&quot;: &quot;纪优&quot;,
+  &quot;url&quot;: &quot;https://www.jiyou.site&quot;
+}
 </code></pre>
-<p>这段代码有两个问题。第一个是 <code>sameAs: [AUTHOR_SAMEAS]</code>——当 <code>AUTHOR_SAMEAS</code> 是字符串时它能工作，但把 <code>AUTHOR_SAMEAS</code> 改成数组后，<code>[AUTHOR_SAMEAS]</code> 就变成了嵌套数组 <code>[[...]]</code>，这不是合法的 sameAs 用法。第二个是 <code>knowsAbout: article.tags || []</code>——知识领域跟着每篇文章的 tag 变，讲 GEO 的文章说&quot;我知道 GEO&quot;，讲段落写作的文章说&quot;我知道自足段落&quot;，AI 拼不出一个稳定的&quot;纪优研究什么&quot;的画像。</p>
-<p>首页的 WebSite JSON-LD 也有同样的问题，而且因为首页是手写模板字符串（不是 <code>JSON.stringify</code> 生成），<code>sameAs</code> 直接写成了 <code>&quot;${AUTHOR_SAMEAS}&quot;</code>——数组被模板化成了一个逗号字符串，JSON 里是 <code>&quot;https://...,https://...&quot;</code>，既不是合法的 URL 数组，也不是合法的 sameAs 声明。</p>
-<pre><code class="language-javascript">// 首页手写模板里的 Bug 写法
-&quot;sameAs&quot;: [&quot;${AUTHOR_SAMEAS}&quot;]   // 数组被 toString 成 &quot;a,b&quot;，再塞进单元素数组
+<p>读法：<code>@type</code> 说&quot;这是一张人（Person）的名片&quot;，<code>name</code> 说&quot;名字叫纪优&quot;，<code>url</code> 说&quot;主页网址是这个&quot;。AI 读懂了这张名片，就知道这个网页讲的是谁。</p>
+<p>问题来了。你的每篇文章页、首页、知乎主页、GitHub 资料页，各自都塞了一张这样的名片。但每张名片都是独立写的，名片和名片之间没有任何关联标记。AI 看到四张名片，名字都叫&quot;纪优&quot;，但它没法确认这四张是不是同一个人——就像你拿到四张身份证，照片和名字都对得上，但身份证号各不相同，你不敢断定这是同一个人。</p>
+<p>实体消歧要做的，就是给所有这些名片发同一个&quot;身份证号&quot;，让 AI 一看就知道是同一个人。</p>
+<h2>三个字段，就是身份证的三行信息</h2>
+<p>实体消歧靠三个字段配合。先看它们各自在名片里对应什么，再看怎么串起来。</p>
+<p><strong>第一行：<code>@id</code> —— 身份证号。</strong></p>
+<pre><code class="language-json">&quot;@id&quot;: &quot;https://www.jiyou.site/#person&quot;
 </code></pre>
-<h2>改造第一步：集中管理实体配置</h2>
-<p>改造的第一步是把所有实体相关的配置集中到一个常量区，让全站的实体定义只在一处维护。这样改一次 <code>sameAs</code>，全站的文章页和首页同时生效，不会出现&quot;文章页的 sameAs 改了但首页忘了改&quot;的脱节。</p>
-<pre><code class="language-javascript">// ── 配置 ──
-const SITE_URL = &#39;https://www.jiyou.site&#39;;
-const AUTHOR_NAME = &#39;纪优&#39;;
-const AUTHOR_URL = SITE_URL;
-const AUTHOR_DESCRIPTION = &#39;AI 智能体应用与生成式引擎优化（GEO）研究者&#39;;
+<p>这是给&quot;纪优&quot;这个实体发的全局唯一身份证号。注意它长成一个网址——这是 Schema.org（一个全球通用的网页名片标准）规定的格式：身份证号必须是一个网址，网址后面加个 <code>#person</code> 表示&quot;这个网址指向的那个人&quot;。无论这个身份证号出现在文章页、首页还是别的地方，AI 都知道它指向的是同一个&quot;纪优&quot;。这是拼图的底座。</p>
+<p><strong>第二行：<code>sameAs</code> —— 多平台身份锚点。</strong></p>
+<pre><code class="language-json">&quot;sameAs&quot;: [
+  &quot;https://www.zhihu.com/people/yeah-98-35&quot;,
+  &quot;https://github.com/jaykaai&quot;
+]
+</code></pre>
+<p><code>sameAs</code> 是&quot;等同于&quot;的意思。这两行告诉 AI：&quot;这个纪优在知乎是 yeah-98-35，在 GitHub 是 jaykaai。&quot; AI 会顺着这两个网址去验证——打开知乎主页看看，打开 GitHub 看看，确认是不是同一个人。这是拼图的胶水，跨平台验证通过，可信度上升。</p>
+<p><strong>第三行：<code>knowsAbout</code> —— 专业领域。</strong></p>
+<pre><code class="language-json">&quot;knowsAbout&quot;: [&quot;生成式引擎优化&quot;, &quot;AI 智能体应用&quot;, &quot;结构化数据&quot;, &quot;搜索引擎优化&quot;]
+</code></pre>
+<p><code>knowsAbout</code> 说&quot;这个人懂哪些领域&quot;。这是帮 AI 判断的：如果有人问 AI&quot;GEO 是什么&quot;，AI 会优先去找一个 <code>knowsAbout</code> 里有&quot;生成式引擎优化&quot;的人来回答，而不是找一个名片上写&quot;美食博主&quot;的人。这是拼图的标签。</p>
+<p>三个字段串起来，就是一张完整的实体图。下面这张图就是改造完之后的整体结构，每个框是一张名片，箭头就是&quot;指向&quot;——箭头上的字对应名片里的那一行字段：</p>
+<pre><code class="language-text">  ┌───────────────┐         ┌───────────────┐
+  │   文章名片     │         │   网站名片     │
+  │   (Article)   │         │   (WebSite)   │
+  └───────┬───────┘         └───────┬───────┘
+          │                         │
+    author│(作者)             author│(作者)
+    指向↓ │                  指向↓ │publisher(发布者)
+          │                         │
+          ▼                         ▼
+  ┌───────────────────────────────────────┐
+  │         人物名片 (Person)              │
+  │                                         │
+  │  @id:  ……/#person   ← 身份证号         │
+  │  name: 纪优                            │
+  │  sameAs: [知乎, GitHub]  ← 多平台锚点   │
+  │  knowsAbout: [4个领域]  ← 专业领域      │
+  │                                         │
+  │  worksFor(就职于) ──┐                   │
+  └─────────────────────┼───────────────────┘
+                        │ 指向↓
+                        ▼
+  ┌───────────────────────────────────────┐
+  │       机构名片 (Organization)          │
+  │  @id:  ……/#organization  ← 身份证号    │
+  │  name: 纪优                            │
+  │  sameAs: [知乎, GitHub]               │
+  │  founder(创始人): 指向 #person ← 闭环  │
+  └───────────────────────────────────────┘
+</code></pre>
+<p>读这张图：文章名片和网站名片都不自己定义作者，而是用 <code>author</code> 那一行指向&quot;人物名片&quot;。人物名片和机构名片互相指（人物&quot;就职于&quot;机构，机构&quot;创始人&quot;是人物），形成闭环。AI 无论从哪篇文章进入，沿着箭头都能找到同一份完整的&quot;纪优&quot;名片，再顺着 <code>sameAs</code> 去知乎和 GitHub 验证。</p>
+<h2>改造前：每张名片各写各的，互不相认</h2>
+<p>改造前，脚本给每篇文章生成的名片是这样：文章名片里把作者写成一个完整的内联对象，另外再单独写一张人物名片。每篇文章都重复一遍，首页又是一份。</p>
+<pre><code class="language-json">// 改造前 · 文章名片里的作者字段
+&quot;author&quot;: {
+  &quot;@type&quot;: &quot;Person&quot;,
+  &quot;name&quot;: &quot;纪优&quot;,
+  &quot;url&quot;: &quot;https://www.jiyou.site&quot;
+}
+</code></pre>
+<p>问题在哪？这段作者信息是&quot;内联&quot;的——意思是它直接写在文章名片里，和别的文章名片里的作者信息没有关联。四篇文章就有四份各自独立的&quot;纪优&quot;作者信息，谁也不认谁。AI 没法确认这四份是同一个人。</p>
+<p>还有一个隐藏问题。人物名片里有一行声明专业领域：</p>
+<pre><code class="language-json">// 改造前 · 人物名片的专业领域字段
+&quot;knowsAbout&quot;: [&quot;GEO&quot;, &quot;自足段落&quot;, &quot;答案优先&quot;]
+</code></pre>
+<p>这里的值跟着每篇文章的标签（tag）变。讲 GEO 的文章，名片说&quot;纪优懂 GEO&quot;；讲段落写作的文章，名片说&quot;纪优懂自足段落&quot;。AI 拼不出一个稳定的&quot;纪优研究什么&quot;的画像——这个人怎么每篇文章都在换专业？</p>
+<h2>改造第一步：把身份证号集中管理</h2>
+<p>改造的第一步，是把所有身份信息集中到一个地方管理，这样改一次，全站同时生效。在脚本里，这就是定义几个&quot;常量&quot;——可以理解为&quot;全局变量&quot;，定义一次，下面所有地方都用这个值：</p>
+<pre><code class="language-javascript">// 身份证号（用网址形式，这是 Schema.org 规定的）
+const PERSON_ID = `${SITE_URL}/#person`;           // 人物的身份证号
+const ORG_ID = `${SITE_URL}/#organization`;        // 机构的身份证号
+const WEBSITE_ID = `${SITE_URL}/#website`;         // 网站的身份证号
 
-// 实体 sameAs 锚点（跨平台身份验证，只填真实拥有的平台）
+// 多平台锚点：只填你真实拥有的平台账号
 const AUTHOR_SAMEAS = [
-  &#39;https://www.zhihu.com/people/yeah-98-35&#39;,   // 知乎（实体锚点）
-  &#39;https://github.com/jaykaai&#39;,                  // GitHub（代码实体锚点）
+  &#39;https://www.zhihu.com/people/yeah-98-35&#39;,   // 知乎
+  &#39;https://github.com/jaykaai&#39;,                  // GitHub
 ];
 
-// 稳定知识领域（knowsAbout，不随文章 tag 变动）
+// 稳定专业领域：不随文章变，是&quot;纪优&quot;作为研究者的固定身份
 const AUTHOR_KNOWS_ABOUT = [
   &#39;生成式引擎优化&#39;,
   &#39;AI 智能体应用&#39;,
   &#39;结构化数据&#39;,
   &#39;搜索引擎优化&#39;,
 ];
-
-// 实体图 @id（实体消歧用，AI 引擎靠 @id 拼合同一个实体）
-const PERSON_ID = `${SITE_URL}/#person`;
-const ORG_ID = `${SITE_URL}/#organization`;
-const WEBSITE_ID = `${SITE_URL}/#website`;
 </code></pre>
-<p>这段配置有三个要点。<code>AUTHOR_SAMEAS</code> 是数组，只填真实拥有的平台账号——知乎和 GitHub。sameAs 不是越多越好，填一个打不开的页面比不填更糟，因为 AI 去验证时拿到 404 会降低这个实体的可信度。<code>AUTHOR_KNOWS_ABOUT</code> 是作者作为一个研究者的稳定身份，不随每篇文章的主题变动——无论这篇讲 GEO 还是讲段落写作，&quot;纪优&quot;研究的都是这四个领域。三个 <code>@id</code> 常量用稳定 URL 形式，这是 Schema.org 实体消歧的标准做法：<code>@id</code> 必须是一个全局唯一的 URI，用自己域名下的片段标识符（<code>#person</code>）是最稳定的方式。</p>
-<h2>改造第二步：文章页用 @id 串起实体图</h2>
-<p>第二步改文章页的 JSON-LD 生成。核心变化是：Article 的 <code>author</code> 和 <code>publisher</code> 不再内联完整对象，改成用 <code>{&quot;@id&quot;: ...}</code> 引用实体图里已有的 Person 和 Organization。同时新增一个独立的 Organization 块，让 Person 和 Organization 互相引用。</p>
-<pre><code class="language-javascript">function renderArticle(article, topicCount) {
-  let htmlBody = marked.parse(article.body);
-  htmlBody = processAnnotations(htmlBody);
+<p>这几行要说明三点。</p>
+<p>身份证号为什么是网址？因为 Schema.org 标准规定 <code>@id</code> 必须是一个网址，网址后面跟 <code>#person</code> 表示&quot;这个网址指向的那个人&quot;。这是全球通用的写法，不是随便编的。</p>
+<p><code>AUTHOR_SAMEAS</code> 只填了知乎和 GitHub 两个——因为这是真实拥有的账号。<code>sameAs</code> 不是社交链接列表，是身份验证锚点，AI 会顺着去验证。填一个打不开的页面比不填更糟（下一节细说）。</p>
+<p><code>AUTHOR_KNOWS_ABOUT</code> 写的是&quot;纪优作为研究者的稳定身份&quot;，不是某篇文章的主题。无论写什么文章，&quot;纪优&quot;研究的就是这四个领域。这修掉了改造前&quot;专业领域跟着文章标签变&quot;的问题。</p>
+<h2>改造第二步：文章名片改用&quot;指向&quot;，不再重写</h2>
+<p>第二步改文章名片的生成。核心变化就一行：文章名片的 <code>author</code> 字段，从&quot;重新写一份完整作者信息&quot;改成&quot;指向那张人物名片&quot;。</p>
+<pre><code class="language-json">// 改造前 · 文章名片里重写一份作者
+&quot;author&quot;: { &quot;@type&quot;: &quot;Person&quot;, &quot;name&quot;: &quot;纪优&quot;, &quot;url&quot;: &quot;…&quot; }
 
-  // Article 块：author/publisher 用 @id 引用，不重复定义实体
-  const articleJsonLd = JSON.stringify({
-    &#39;@context&#39;: &#39;https://schema.org&#39;,
-    &#39;@id&#39;: `${SITE_URL}/articles/${article.slug}.html#article`,
-    &#39;@type&#39;: &#39;Article&#39;,
-    headline: article.title,
-    description: article.description || &#39;&#39;,
-    author: { &#39;@id&#39;: PERSON_ID },        // 引用实体图，不重复定义
-    publisher: { &#39;@id&#39;: ORG_ID },
-    datePublished: article.date,
-    dateModified: article.date,
-    inLanguage: &#39;zh-CN&#39;,
-    mainEntityOfPage: `${SITE_URL}/articles/${article.slug}.html`,
-  }, null, 2);
-
-  // Person 块：实体图的中心，带 @id + sameAs + knowsAbout + worksFor
-  const personJsonLd = JSON.stringify({
-    &#39;@context&#39;: &#39;https://schema.org&#39;,
-    &#39;@id&#39;: PERSON_ID,
-    &#39;@type&#39;: &#39;Person&#39;,
-    name: AUTHOR_NAME,
-    url: AUTHOR_URL,
-    description: AUTHOR_DESCRIPTION,
-    sameAs: AUTHOR_SAMEAS,               // 直接用数组，不要再包一层
-    knowsAbout: AUTHOR_KNOWS_ABOUT,     // 稳定知识领域，不用 article.tags
-    worksFor: { &#39;@id&#39;: ORG_ID },        // 指向 Organization
-  }, null, 2);
-
-  // Organization 块：和 Person 互相引用
-  const orgJsonLd = JSON.stringify({
-    &#39;@context&#39;: &#39;https://schema.org&#39;,
-    &#39;@id&#39;: ORG_ID,
-    &#39;@type&#39;: &#39;Organization&#39;,
-    name: AUTHOR_NAME,
-    url: AUTHOR_URL,
-    description: AUTHOR_DESCRIPTION,
-    sameAs: AUTHOR_SAMEAS,
-    founder: { &#39;@id&#39;: PERSON_ID },      // 指回 Person，闭环
-  }, null, 2);
-
-  const faqJsonLd = generateFaqJsonLd(article.faq, htmlBody);
-
-  return `&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;zh-CN&quot;&gt;
-&lt;head&gt;
-  ...
-  &lt;script type=&quot;application/ld+json&quot;&gt;
-${articleJsonLd}
-  &lt;/script&gt;
-  &lt;script type=&quot;application/ld+json&quot;&gt;
-${personJsonLd}
-  &lt;/script&gt;
-  &lt;script type=&quot;application/ld+json&quot;&gt;
-${orgJsonLd}
-  &lt;/script&gt;
-  ${faqJsonLd ? `&lt;script type=&quot;application/ld+json&quot;&gt;\n${faqJsonLd}\n  &lt;/script&gt;` : &#39;&#39;}
-&lt;/head&gt;
+// 改造后 · 文章名片里只写&quot;作者是 #person 那个人&quot;
+&quot;author&quot;: { &quot;@id&quot;: &quot;https://www.jiyou.site/#person&quot; }
 </code></pre>
-<p>三个要点。Article 块的 <code>author: { &#39;@id&#39;: PERSON_ID }</code> 是引用，不是定义——它告诉 AI&quot;这篇文章的作者是 <code>#person</code> 那个实体&quot;，实体本身的完整定义在下面的 Person 块里。Person 和 Organization 互相用 <code>worksFor</code> 和 <code>founder</code> 指向对方，形成闭环——Person 为 Organization 工作，Organization 的创始人是 Person。<code>sameAs: AUTHOR_SAMEAS</code> 直接用数组常量，不再包 <code>[]</code>，这修掉了改造前的嵌套数组 Bug。</p>
-<p>构建后生成的 HTML 里，每篇文章页的 <code>&lt;head&gt;</code> 现在有三个独立的 <code>&lt;script type=&quot;application/ld+json&quot;&gt;</code> 块（Article、Person、Organization），它们靠 <code>@id</code> 互相串联：</p>
-<pre><code class="language-json">{
+<p>对比一下：值从一整个对象 <code>{ &quot;@type&quot;: &quot;Person&quot;, &quot;name&quot;: ..., &quot;url&quot;: ... }</code>，变成了一行 <code>{ &quot;@id&quot;: &quot;…/#person&quot; }</code>。从&quot;在这里重新定义一遍作者&quot;变成&quot;指向实体图里已有的那个作者&quot;。这就是实体消歧的核心动作——用一个身份证号引用，替代一份重复的内联定义。</p>
+<p>对应到代码里，文章名片长这样（Article 块）：</p>
+<pre><code class="language-javascript">const articleJsonLd = JSON.stringify({
+  &#39;@context&#39;: &#39;https://schema.org&#39;,              // 声明用 Schema.org 标准
+  &#39;@id&#39;: `${SITE_URL}/articles/${article.slug}.html#article`,  // 这篇文章自己的身份证号
+  &#39;@type&#39;: &#39;Article&#39;,                             // 这是一张文章名片
+  headline: article.title,                        // 标题
+  description: article.description || &#39;&#39;,         // 摘要
+  author: { &#39;@id&#39;: PERSON_ID },        // ← 作者：指向人物名片，不重写
+  publisher: { &#39;@id&#39;: ORG_ID },        // ← 发布者：指向机构名片
+  datePublished: article.date,
+  dateModified: article.date,
+  inLanguage: &#39;zh-CN&#39;,                            // 中文
+  mainEntityOfPage: `${SITE_URL}/articles/${article.slug}.html`,
+}, null, 2);
+</code></pre>
+<p>然后是人物名片和机构名片，两块互相指，形成闭环：</p>
+<pre><code class="language-javascript">// 人物名片
+const personJsonLd = JSON.stringify({
+  &#39;@context&#39;: &#39;https://schema.org&#39;,
+  &#39;@id&#39;: PERSON_ID,                    // ← 身份证号
+  &#39;@type&#39;: &#39;Person&#39;,
+  name: AUTHOR_NAME,
+  url: AUTHOR_URL,
+  description: AUTHOR_DESCRIPTION,
+  sameAs: AUTHOR_SAMEAS,               // ← 多平台锚点（直接用数组，别再包[]）
+  knowsAbout: AUTHOR_KNOWS_ABOUT,     // ← 稳定专业领域
+  worksFor: { &#39;@id&#39;: ORG_ID },        // ← 就职于：指向机构名片
+}, null, 2);
+
+// 机构名片
+const orgJsonLd = JSON.stringify({
+  &#39;@context&#39;: &#39;https://schema.org&#39;,
+  &#39;@id&#39;: ORG_ID,                        // ← 身份证号
+  &#39;@type&#39;: &#39;Organization&#39;,
+  name: AUTHOR_NAME,
+  url: AUTHOR_URL,
+  sameAs: AUTHOR_SAMEAS,
+  founder: { &#39;@id&#39;: PERSON_ID },      // ← 创始人：指回人物名片，闭环
+}, null, 2);
+</code></pre>
+<p>注意 <code>sameAs: AUTHOR_SAMEAS</code> 这行——<code>AUTHOR_SAMEAS</code> 已经是数组了，直接用，不能再加方括号包成 <code>sameAs: [AUTHOR_SAMEAS]</code>，那样会变成&quot;数组套数组&quot;。这是改造前的一个 Bug，改造后直接用常量就对了。</p>
+<p>构建后，每篇文章的网页里就嵌了三张名片（文章、人物、机构），靠身份证号互相串。AI 读到文章名片的 <code>author: {&quot;@id&quot;: &quot;…/#person&quot;}</code> 时，会沿着这个号去找人物名片——在同页能找到。在首页也能找到（首页也有一张同号的人物名片）。两个页面的名片指向同一个身份证号，AI 据此确认：这是同一个人。</p>
+<h2>改造第三步：首页也接进实体图</h2>
+<p>首页之前只有一张网站名片，作者信息内联在里面，和其他页面互不相认。改造后首页也用身份证号引用，并补上独立的人物、机构名片。但首页这段代码是手写模板，有个坑：JS 的数组插进字符串时，会被悄悄转成&quot;用逗号拼起来的字符串&quot;，JSON 就坏了。</p>
+<pre><code class="language-javascript">// 改造前 · 数组被插值成字符串（坏的）
+&quot;sameAs&quot;: [&quot;${AUTHOR_SAMEAS}&quot;]
+// 实际输出变成：&quot;sameAs&quot;: [&quot;https://…,https://…&quot;]  ← 这是一个带逗号的字符串，不是数组
+
+// 改造后 · 用 JSON.stringify 转成合法的 JSON 数组
+&quot;sameAs&quot;: ${JSON.stringify(AUTHOR_SAMEAS)}
+// 实际输出：&quot;sameAs&quot;: [&quot;https://…&quot;,&quot;https://…&quot;]  ← 合法数组
+</code></pre>
+<p><code>JSON.stringify()</code> 的作用就是把一个 JS 数组转成&quot;合法的 JSON 文本&quot;。<code>[&quot;a&quot;,&quot;b&quot;]</code> 这样的文本能直接嵌进 JSON 对象里，语法正确。这是改造前首页的核心 Bug，用 <code>JSON.stringify</code> 一次性修掉。</p>
+<p>改完后，首页的网站名片长这样：</p>
+<pre><code class="language-javascript">{
   &quot;@context&quot;: &quot;https://schema.org&quot;,
-  &quot;@id&quot;: &quot;https://www.jiyou.site/articles/zi-zu-duan-luo.html#article&quot;,
-  &quot;@type&quot;: &quot;Article&quot;,
-  &quot;headline&quot;: &quot;GEO 写作的核心方法：自足段落与答案优先&quot;,
-  &quot;author&quot;: { &quot;@id&quot;: &quot;https://www.jiyou.site/#person&quot; },
-  &quot;publisher&quot;: { &quot;@id&quot;: &quot;https://www.jiyou.site/#organization&quot; }
+  &quot;@id&quot;: &quot;${WEBSITE_ID}&quot;,             // 网站身份证号
+  &quot;@type&quot;: &quot;WebSite&quot;,
+  &quot;name&quot;: &quot;${AUTHOR_NAME}&quot;,
+  &quot;url&quot;: &quot;${SITE_URL}/&quot;,
+  &quot;author&quot;: { &quot;@id&quot;: &quot;${PERSON_ID}&quot; },     // ← 指向人物名片
+  &quot;publisher&quot;: { &quot;@id&quot;: &quot;${ORG_ID}&quot; },    // ← 指向机构名片
+  &quot;inLanguage&quot;: &quot;zh-CN&quot;
 }
 </code></pre>
-<pre><code class="language-json">{
-  &quot;@context&quot;: &quot;https://schema.org&quot;,
-  &quot;@id&quot;: &quot;https://www.jiyou.site/#person&quot;,
-  &quot;@type&quot;: &quot;Person&quot;,
-  &quot;name&quot;: &quot;纪优&quot;,
-  &quot;url&quot;: &quot;https://www.jiyou.site&quot;,
-  &quot;sameAs&quot;: [
-    &quot;https://www.zhihu.com/people/yeah-98-35&quot;,
-    &quot;https://github.com/jaykaai&quot;
-  ],
-  &quot;knowsAbout&quot;: [&quot;生成式引擎优化&quot;, &quot;AI 智能体应用&quot;, &quot;结构化数据&quot;, &quot;搜索引擎优化&quot;],
-  &quot;worksFor&quot;: { &quot;@id&quot;: &quot;https://www.jiyou.site/#organization&quot; }
-}
-</code></pre>
-<h2>改造第三步：首页 WebSite 加入实体图</h2>
-<p>第三步改首页。首页的 JSON-LD 是手写模板字符串（不走 <code>JSON.stringify</code>），所以不能直接放 JS 数组进去，要用 <code>JSON.stringify()</code> 把数组转成合法的 JSON 文本再插值。这一步也新增了独立的 Person 和 Organization 块——之前首页只有一个 WebSite 块，作者信息内联在里面，现在拆出来用 <code>@id</code> 引用。</p>
-<pre><code class="language-javascript">  &lt;script type=&quot;application/ld+json&quot;&gt;
-  {
-    &quot;@context&quot;: &quot;https://schema.org&quot;,
-    &quot;@id&quot;: &quot;${WEBSITE_ID}&quot;,
-    &quot;@type&quot;: &quot;WebSite&quot;,
-    &quot;name&quot;: &quot;${AUTHOR_NAME}&quot;,
-    &quot;url&quot;: &quot;${SITE_URL}/&quot;,
-    &quot;description&quot;: &quot;AI 智能体应用与生成式引擎优化（GEO）研究&quot;,
-    &quot;author&quot;: { &quot;@id&quot;: &quot;${PERSON_ID}&quot; },
-    &quot;publisher&quot;: { &quot;@id&quot;: &quot;${ORG_ID}&quot; },
-    &quot;inLanguage&quot;: &quot;zh-CN&quot;
-  }
-  &lt;/script&gt;
-  &lt;script type=&quot;application/ld+json&quot;&gt;
-  {
-    &quot;@context&quot;: &quot;https://schema.org&quot;,
-    &quot;@id&quot;: &quot;${PERSON_ID}&quot;,
-    &quot;@type&quot;: &quot;Person&quot;,
-    &quot;name&quot;: &quot;${AUTHOR_NAME}&quot;,
-    &quot;url&quot;: &quot;${AUTHOR_URL}&quot;,
-    &quot;description&quot;: &quot;${AUTHOR_DESCRIPTION}&quot;,
-    &quot;sameAs&quot;: ${JSON.stringify(AUTHOR_SAMEAS)},
-    &quot;knowsAbout&quot;: ${JSON.stringify(AUTHOR_KNOWS_ABOUT)},
-    &quot;worksFor&quot;: { &quot;@id&quot;: &quot;${ORG_ID}&quot; }
-  }
-  &lt;/script&gt;
-  &lt;script type=&quot;application/ld+json&quot;&gt;
-  {
-    &quot;@context&quot;: &quot;https://schema.org&quot;,
-    &quot;@id&quot;: &quot;${ORG_ID}&quot;,
-    &quot;@type&quot;: &quot;Organization&quot;,
-    &quot;name&quot;: &quot;${AUTHOR_NAME}&quot;,
-    &quot;url&quot;: &quot;${AUTHOR_URL}&quot;,
-    &quot;description&quot;: &quot;${AUTHOR_DESCRIPTION}&quot;,
-    &quot;sameAs&quot;: ${JSON.stringify(AUTHOR_SAMEAS)},
-    &quot;founder&quot;: { &quot;@id&quot;: &quot;${PERSON_ID}&quot; }
-  }
-  &lt;/script&gt;
-</code></pre>
-<p>手写模板里插值数组最容易踩的坑就是 <code>&quot;${AUTHOR_SAMEAS}&quot;</code>。JS 数组被模板字符串隐式 <code>toString()</code> 后变成 <code>&quot;https://...,https://...&quot;</code>，塞进 JSON 后是一个带逗号的字符串，既不是 URL 也不是合法的 sameAs 数组。正确做法是 <code>${JSON.stringify(AUTHOR_SAMEAS)}</code>，它输出的是 <code>[&quot;https://...&quot;,&quot;https://...&quot;]</code> 这样的合法 JSON 数组文本，直接嵌进 JSON 对象里语法正确。这是改造前首页的核心 Bug，改造后用 <code>JSON.stringify</code> 一次性修掉。</p>
-<h2>改造第四步：验证实体图闭环</h2>
-<p>改造完要验证三件事：所有 JSON-LD 块语法合法、<code>@id</code> 引用形成闭环、sameAs 和 knowsAbout 内容正确。语法验证用 Node.js 解析每个 <code>&lt;script type=&quot;application/ld+json&quot;&gt;</code> 块：</p>
+<p>首页从一个孤立的网站名片，变成了实体图的入口——AI 从首页进来，也能沿着身份证号找到完整的人物和机构名片。</p>
+<h2>改造第四步：验证名片真的能拼起来</h2>
+<p>改完要验证三件事：每张名片语法没错、身份证号能对上、内容正确。语法验证就是用程序把每张名片重新解析一遍，能解析通就是合法的：</p>
 <pre><code class="language-javascript">const fs = require(&#39;fs&#39;);
 const re = /type=&quot;application\/ld\+json&quot;&gt;\s*([\s\S]*?)&lt;\/script&gt;/g;
 [&#39;site/articles/zi-zu-duan-luo.html&#39;, &#39;site/index.html&#39;].forEach(f =&gt; {
   const h = fs.readFileSync(f, &#39;utf8&#39;);
   let i = 0, m;
-  console.log(&#39;=== &#39; + f + &#39; ===&#39;);
   while ((m = re.exec(h))) {
     i++;
-    try { JSON.parse(m[1]); console.log(&#39;  块&#39; + i + &#39;: ✅ 合法&#39;); }
-    catch (e) { console.log(&#39;  块&#39; + i + &#39;: ❌ &#39; + e.message); }
+    try { JSON.parse(m[1]); console.log(f + &#39; 名片&#39; + i + &#39;: ✅ 合法&#39;); }
+    catch (e) { console.log(f + &#39; 名片&#39; + i + &#39;: ❌ &#39; + e.message); }
   }
 });
 </code></pre>
-<p>验证结果：文章页 4 块（Article + Person + Organization + FAQPage）全部合法，首页 3 块（WebSite + Person + Organization）全部合法。<code>@id</code> 引用闭环用 grep 确认：Article 的 author 指向 <code>#person</code>，Person 的 worksFor 指向 <code>#organization</code>，Organization 的 founder 指回 <code>#person</code>，WebSite 的 author 和 publisher 分别指向 <code>#person</code> 和 <code>#organization</code>。实体图闭环成立。</p>
-<h2>实体图的完整结构</h2>
-<p>改造完成后，整站的实体图结构如下。四个实体通过 <code>@id</code> 互相引用，AI 引擎无论从哪个页面进入，都能沿着 <code>@id</code> 找到完整的实体定义。</p>
-<pre><code class="language-text">Article (#article)              WebSite (#website)
-  ├─ author → #person             ├─ author → #person
-  └─ publisher → #organization   └─ publisher → #organization
-        ↑                               ↑
-        └──────────┬───────────────────┘
-                   │
-Person (#person) ←┼→ worksFor / founder ←→ Organization (#organization)
-  ├─ sameAs: [知乎, GitHub]              ├─ sameAs: [知乎, GitHub]
-  └─ knowsAbout: 4 个稳定领域            └─ founder → #person
-</code></pre>
-<p>实体图的关键不是每个页面有多少 JSON-LD 块，而是这些块之间能不能通过 <code>@id</code> 连起来。AI 引擎读到你文章页的 <code>author: {&quot;@id&quot;: &quot;.../#person&quot;}</code> 时，它会去找 <code>#person</code> 这个 <code>@id</code> 的完整定义。在文章页它能在同页的 Person 块里找到；在首页它也能在首页的 Person 块里找到——两个页面指向的是同一个 <code>@id</code>，AI 据此确认这是同一个人。再顺着 <code>sameAs</code> 去知乎和 GitHub 验证，&quot;纪优&quot;这个实体的身份就跨平台闭环了。</p>
-<h2>为什么 sameAs 只填真实拥有的平台？</h2>
-<p>sameAs 是实体消歧的锚点，它告诉 AI&quot;我在这个平台的身份是 X&quot;。AI 引擎会去这些 URL 验证身份是否一致。填一个你确实拥有、且资料与自建站一致的页面，是一次成功的身份验证，增加实体可信度。填一个打不开的、或资料对不上的页面，是一次失败的身份验证，反而稀释可信度。</p>
-<p>sameAs 不是社交链接列表，是身份验证锚点。填之前问自己：这个 URL 我能打开吗？这个页面上的人和我自建站说的是同一个人吗？两个问题都是&quot;是&quot;才填进去。知乎主页和 GitHub 主页是两个天然适合做 sameAs 的平台——知乎是国内 AI 引擎能抓取的中文身份平台，GitHub 是全球通用的代码贡献者身份平台，两者覆盖了中文和英文两个圈层的身份验证。</p>
-<h2>为什么 knowsAbout 不用文章 tag？</h2>
-<p>knowsAbout 声明的是&quot;纪优作为一个研究者，稳定研究哪些领域&quot;，不是&quot;这篇文章讲了什么&quot;。如果 knowsAbout 跟着文章 tag 走，讲 GEO 的文章说你知道&quot;GEO&quot;，讲段落写作的文章说你知道&quot;自足段落&quot;——AI 拼不出一个稳定的身份画像，只看到一堆零散的话题标签。</p>
-<p>稳定的 4 个领域（生成式引擎优化、AI 智能体应用、结构化数据、搜索引擎优化）是&quot;纪优&quot;这个实体的专业边界。无论写什么文章，这个边界不变。AI 引擎在判断&quot;纪优在 GEO 话题上有没有发言权&quot;时，看到的是一份稳定的、跨文章一致的专业声明，而不是随着每篇文章波动的标签集合。这是实体可信度的一部分：一个研究边界稳定的人，比一个每篇文章都在变话题的人，更值得被 AI 当作可引用的来源。</p>
+<p>验证结果：文章页 4 张名片（文章 + 人物 + 机构 + 问答）全部合法，首页 3 张（网站 + 人物 + 机构）全部合法。身份证号用检索确认：每个 <code>@id</code> 都能找到对应的指向目标，没有断链。实体图闭环成立。</p>
+<h2>为什么 sameAs 只能填真实拥有的平台？</h2>
+<p><code>sameAs</code> 是身份验证锚点，AI 会顺着这些网址去验证身份是否一致。填一个你确实拥有、且资料和自建站一致的页面，是一次成功的身份验证，增加你的可信度。填一个打不开的、或资料对不上的页面，是一次失败的身份验证，反而稀释可信度。</p>
+<p>填之前问自己两个问题：这个网址我自己能打开吗？这个页面上的人和我自建站说的是同一个人吗？两个都是&quot;是&quot;才填进去。知乎是国内 AI 引擎能抓取的中文身份平台，GitHub 是全球通用的代码贡献者身份平台，这两个覆盖了中文和英文两个圈层，是天然适合做 <code>sameAs</code> 的平台。</p>
+<h2>为什么 knowsAbout 不用文章标签？</h2>
+<p><code>knowsAbout</code> 声明的是&quot;纪优作为一个研究者，稳定研究哪些领域&quot;，不是&quot;这篇文章讲了什么&quot;。如果它跟着文章标签变，讲 GEO 的文章说&quot;我知道 GEO&quot;，讲段落写作的说&quot;我知道自足段落&quot;——AI 拼不出一个稳定的身份画像，只看到一堆随文章波动的话题标签。</p>
+<p>一个研究边界稳定的人，比一个每篇文章都在换话题的人，更值得被 AI 当作可引用的来源。<code>knowsAbout</code> 就是告诉 AI：无论我这次写了什么，我的专业边界始终是这四个领域。</p>
 <h2>三个字段怎么配合工作？</h2>
-<p>实体消歧的三个字段各司其职，缺一不可。<code>@id</code> 解决&quot;这是不是同一个实体&quot;的问题——全局唯一标识，让 AI 跨页面跨平台时能确认指向同一个人。<code>sameAs</code> 解决&quot;这个实体在其他平台是谁&quot;的问题——多平台身份锚点，让 AI 能去知乎和 GitHub 验证身份。<code>knowsAbout</code> 解决&quot;这个实体在什么话题上有发言权&quot;的问题——稳定专业边界，让 AI 判断是否值得引用这个人的观点。</p>
-<p>三个字段配合工作的流程是：AI 引擎在某篇文章里看到 <code>author: {&quot;@id&quot;: &quot;.../#person&quot;}</code> → 沿 <code>@id</code> 找到 Person 块 → 读到 <code>sameAs</code> 去知乎和 GitHub 验证&quot;纪优&quot;的身份 → 读到 <code>knowsAbout</code> 确认这个人在&quot;GEO&quot;领域有专业声明 → 综合 <code>@id</code> 的一致性和 <code>sameAs</code> 的验证结果，决定这个实体是否可信、是否值得在回答里引用为来源。这个链条里任何一环缺失或错误，AI 拼出的就是一个残缺或矛盾的身份画像。</p>
+<p>AI 沿着实体图工作的完整链条是这样的：在某篇文章里看到 <code>author: {&quot;@id&quot;: &quot;…/#person&quot;}</code> → 沿这个身份证号找到人物名片 → 读到 <code>sameAs</code> 去知乎和 GitHub 验证&quot;纪优&quot;身份 → 读到 <code>knowsAbout</code> 确认这个人在&quot;GEO&quot;领域有专业声明 → 综合判断这个实体是否可信、是否值得在回答里引用。</p>
+<p><code>@id</code> 解决&quot;是不是同一个实体&quot;，<code>sameAs</code> 解决&quot;在其他平台是谁&quot;，<code>knowsAbout</code> 解决&quot;在什么话题上有发言权&quot;。三个字段各司其职，缺一环，AI 拼出的就是一个残缺或矛盾的身份画像。实体图的价值不在于名片数量，而在于这些名片之间能不能通过身份证号连成一张没有断链的网。</p>
 
     </div>
 
