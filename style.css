@@ -303,6 +303,18 @@ body {
   display: block;
 }
 
+/* 论文风实体图（内联 SVG） */
+.article-body svg.entity-diagram {
+  display: block;
+  width: 100%;
+  max-width: 880px;
+  height: auto;
+  margin: 2.5rem auto;
+}
+@media print {
+  .article-body svg.entity-diagram { page-break-inside: avoid; }
+}
+
 /* 分割线 */
 .article-body hr {
   border: none;
