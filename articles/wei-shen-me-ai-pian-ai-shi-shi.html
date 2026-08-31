@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>为什么 AI 偏爱&quot;像事实&quot;的内容——三层机制</title>
+  <meta name="description" content="AI 引擎为什么给统计数字、权威来源、笃定语气加分？不是玄学，是三层机制叠加的结果：预训练让模型把&quot;数字/来源/笃定&quot;和&quot;事实&quot;关联，指令训练教会它引用有出处的内容，回答时又只能靠&quot;哪个看起来最可信&quot;来取舍。理解机制，你才知道 GEO 的排序策略本质是让内容&quot;看起来像无可置疑的事实&quot;。">
+  <meta name="author" content="纪优">
+  <link rel="canonical" href="https://www.jiyou.site/articles/wei-shen-me-ai-pian-ai-shi-shi.html">
+  <link rel="stylesheet" href="../style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@id": "https://www.jiyou.site/articles/wei-shen-me-ai-pian-ai-shi-shi.html#article",
+  "@type": "Article",
+  "headline": "为什么 AI 偏爱\"像事实\"的内容——三层机制",
+  "description": "AI 引擎为什么给统计数字、权威来源、笃定语气加分？不是玄学，是三层机制叠加的结果：预训练让模型把\"数字/来源/笃定\"和\"事实\"关联，指令训练教会它引用有出处的内容，回答时又只能靠\"哪个看起来最可信\"来取舍。理解机制，你才知道 GEO 的排序策略本质是让内容\"看起来像无可置疑的事实\"。",
+  "author": {
+    "@id": "https://www.jiyou.site/#person"
+  },
+  "publisher": {
+    "@id": "https://www.jiyou.site/#organization"
+  },
+  "datePublished": "2026-08-30",
+  "dateModified": "2026-08-30",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://www.jiyou.site/articles/wei-shen-me-ai-pian-ai-shi-shi.html"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@id": "https://www.jiyou.site/#person",
+  "@type": "Person",
+  "name": "纪优",
+  "url": "https://www.jiyou.site",
+  "description": "AI 智能体应用与生成式引擎优化（GEO）研究者",
+  "sameAs": [
+    "https://www.zhihu.com/people/yeah-98-35",
+    "https://github.com/jaykaai"
+  ],
+  "knowsAbout": [
+    "生成式引擎优化",
+    "AI 智能体应用",
+    "结构化数据",
+    "搜索引擎优化"
+  ],
+  "worksFor": {
+    "@id": "https://www.jiyou.site/#organization"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@id": "https://www.jiyou.site/#organization",
+  "@type": "Organization",
+  "name": "纪优",
+  "url": "https://www.jiyou.site",
+  "description": "AI 智能体应用与生成式引擎优化（GEO）研究者",
+  "sameAs": [
+    "https://www.zhihu.com/people/yeah-98-35",
+    "https://github.com/jaykaai"
+  ],
+  "founder": {
+    "@id": "https://www.jiyou.site/#person"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "为什么统计数字能让 AI 加权？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "为什么统计数字能让 AI 加权？"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么 AI 引擎偏爱权威来源？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "为什么 AI 引擎偏爱权威来源？"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "AI 是怎么判断哪段内容可引用的？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AI 是怎么判断哪段内容可引用的？"
+      }
+    }
+  ]
+}
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+
+<div class="article-wrapper">
+  <div class="article-card">
+
+    <div class="article-topbar">
+      <div class="dots">
+        <span class="dot r"></span>
+        <span class="dot y"></span>
+        <span class="dot g"></span>
+      </div>
+      <div class="path">
+        <span class="dir">❯ GEO 原理</span>
+        <span style="color:#c7c7cc;"> / </span>
+        <span class="file">为什么 AI 偏爱&quot;像事实&quot;的内容——三层机制</span>
+      </div>
+    </div>
+
+    <div class="article-body">
+      <h1>为什么 AI 偏爱&quot;像事实&quot;的内容——三层机制</h1>
+      <p>上一课讲了 RAG 的三段管道——检索、排序、合成。这一课深入排序环节的核心：<strong>为什么 AI 偏爱&quot;像事实&quot;的内容</strong>。</p>
+<p>这是整个 GEO 领域最深的一个机制，也是&quot;懂皮毛的人&quot;和&quot;真专家&quot;的分水岭。讲完你会明白：统计数字、权威来源、权威语气这些方法，背后是同一个更底层的东西。</p>
+<h2>先回到那个问题</h2>
+<p>上一课说，排序环节会<strong>给&quot;像事实&quot;的片段加权</strong>。但为什么？为什么模型会偏爱统计数字、权威来源？</p>
+<p>表面答案是&quot;AI 被训练成偏好可信内容&quot;——但这是<strong>循环论证</strong>。真问题是：<strong>是什么训练机制，让模型学会了偏好这些片段？</strong></p>
+<p>答案要从大模型训练的三个阶段里找。这个机制分三层，一层比一层深。</p>
+<pre><code>  用户提问           ① 检索              ② 排序             ③ 合成
+ ┌─────────┐      ┌─────────────┐    ┌──────────────┐    ┌────────────┐
+ │ 什么是   │ ───▶ │ 切段 → 向量匹配 │ ─▶ │ 数字/来源/新鲜度│ ─▶ │ 拼成回答   │
+ │ GEO？    │      │ 找到相关片段   │    │ 打分挑最可信  │    │ 标注你的来源│
+ └─────────┘      └─────────────┘    └──────────────┘    └────────────┘
+                                                                  │
+                                                                  ▼
+                                                        ┌──────────────────┐
+                                                        │ 你的段落被引用    │
+                                                        │ 回答末尾出现      │
+                                                        │ jiyou.site 来源   │
+                                                        └──────────────────┘
+</code></pre>
+<h2>第一层：预训练——模型&quot;见过&quot;的东西</h2>
+<p>大模型在预训练阶段，读了互联网上海量的文本。这个阶段模型学到的不只是&quot;语法&quot;，还有<strong>语料的统计规律</strong>。</p>
+<p>关键规律：<strong>互联网上&quot;带数字、带来源、语气笃定&quot;的段落，绝大多数是真实的事实陈述</strong>——新闻、百科、论文、官方文档。而&quot;没有依据、含糊其辞、犹豫&quot;的段落，往往是水贴、营销软文、个人感想。</p>
+<p>模型在预训练中<strong>隐式学到的统计分布</strong>是：</p>
+<blockquote>
+<p>&quot;带具体数字 + 带来源链接 + 语气笃定的段落 → 大概率是可信事实&quot;
+&quot;含糊 + 犹豫 + 无出处 → 大概率不可信&quot;</p>
+</blockquote>
+<p>这不是谁设计的规则，而是模型从海量语料里<strong>自己归纳出来的相关性</strong>。数字和权威性，是模型判断&quot;这段可不可信&quot;的<strong>统计信号</strong>。</p>
+<p><strong>这就是为什么统计数字有效</strong>——不是玄学，而是模型在预训练阶段就已经把&quot;数字&quot;和&quot;事实&quot;关联起来了。</p>
+<h2>第二层：指令训练——模型学会&quot;引用&quot;</h2>
+<p>光预训练还不够。模型需要学会&quot;回答用户问题时，优先引用可信来源&quot;——这是<strong>指令微调（SFT）+ RLHF</strong>阶段教会它的。</p>
+<p>这个阶段，工程师用大量&quot;问题 + 优质回答&quot;的样本训练模型，其中优质回答的共同点是：<strong>引用了权威来源、提供了可验证的事实</strong>。模型被教成：面对一个问题，应该去寻找并引用可信的、有出处的信息，而不是凭空编造。</p>
+<p>更深的一层是 <strong>RLHF（基于人类反馈的强化学习）</strong>：人类标注者给&quot;引用了权威来源的回答&quot;打高分，给&quot;含糊、无出处、编造的回答&quot;打低分。模型为了拿高分，学会了<strong>主动偏好有据可查的片段</strong>。</p>
+<p>这一层解释了<strong>为什么权威来源、可查证性有效</strong>——模型被训练成：有出处 &gt; 没出处。</p>
+<h2>第三层：现场判断——模型&quot;当下&quot;取舍</h2>
+<p>即便不经过上面两层，模型还有一个更&quot;当下&quot;的能力——<strong>上下文学习（In-Context Learning）</strong>。</p>
+<p>当引擎检索出几百段候选时，模型在<strong>生成回答的当下</strong>，会对比这些候选：</p>
+<ul>
+<li>这一段写了&quot;34.2% 的用户&quot;，另一段写&quot;很多用户&quot; → 模型倾向前者，因为它<strong>看起来</strong>更具体、更可信</li>
+<li>这一段引用了一篇论文，另一段没出处 → 模型倾向前者，因为它<strong>看起来</strong>更有依据</li>
+<li>这一段首句直接回答&quot;GEO 是一种……&quot;，另一段绕了半天 → 模型倾向前者，因为它<strong>直接命中</strong>问题</li>
+</ul>
+<p>模型在&quot;现场&quot;用自己的语言理解能力做判断——<strong>它没法真正核实谁对谁错，只能靠&quot;哪个看起来更可信&quot;来判断</strong>。而这个&quot;看起来可信&quot;，就是它从预训练学到的统计信号 + 指令训练学到的引用偏好，叠加的结果。</p>
+<pre><code>第一层 · 预训练          第二层 · 指令训练         第三层 · 现场判断
+ 统计信号                 引用偏好                  对比取舍
+─────────────          ─────────────            ─────────────
+ 数字/来源/笃定          训练教它引用权威来源       候选片段现场对比
+     ↓                      ↓                        ↓
+ 在语料里常伴&quot;事实&quot;       RLHF 给有出处高分        选&quot;看起来最可信&quot;的
+     ↓                      ↓                        ↓
+ 模型自己归纳规律         有出处 &gt; 没出处           具体 &gt; 含糊
+────────────────────────────────────────────────────────────────
+                    三层叠加 → AI 靠&quot;哪个像事实&quot;取舍
+</code></pre>
+<h2>三层机制合一：为什么&quot;像事实&quot;有效</h2>
+<p>把三层串起来，你看到的是一个完整闭环：</p>
+<ul>
+<li><strong>预训练</strong>让模型把&quot;数字/来源/笃定&quot;和&quot;事实&quot;关联（统计信号）</li>
+<li><strong>指令训练</strong>教会它&quot;引用有出处的内容&quot;（引用偏好）</li>
+<li><strong>现场判断</strong>让它在候选里选&quot;看起来最可信&quot;的（对比取舍）</li>
+</ul>
+<p><strong>合起来，AI 只能靠&quot;哪个看起来像事实&quot;来做取舍。</strong> 你的任务，就是让段落&quot;看起来&quot;像无可置疑的事实。</p>
+<h2>这对你的实战意味着什么</h2>
+<p>理解了机制，你的方法论就从&quot;背技巧&quot;升级为&quot;<strong>让段落看起来像无可置疑的事实</strong>&quot;。具体落地：</p>
+<p><strong>1. 数字 &gt; 形容词。</strong>
+&quot;很多用户&quot; → 模型无法判断多少，不觉得是事实。&quot;34.2% 的用户&quot; → 模型觉得具体、可验证、像事实。
+<strong>原理：</strong> 具体数字是模型最强的&quot;事实信号&quot;。</p>
+<p><strong>2. 出处 &gt; 无出处。</strong>
+&quot;根据 Princeton 的 GEO 研究&quot; → 模型觉得有据可查。&quot;研究表明&quot; → 模型无法验证，觉得含糊。
+<strong>原理：</strong> 有来源的陈述，模型判断可信度更高。</p>
+<p><strong>3. 笃定 &gt; 犹豫。</strong>
+&quot;GEO 能提升可见度高达 40%&quot; → 模型觉得确定。&quot;GEO 可能会提升可见度&quot; → 模型觉得拿不准。
+<strong>原理：</strong> 犹豫词削弱&quot;事实感&quot;。模型训练时学到&quot;笃定陈述往往是事实&quot;。</p>
+<p><strong>4. 首句给答案 &gt; 绕圈。</strong>
+&quot;自足段落是被 AI 摘出后仍能独立读懂的段落&quot; → 直接命中。&quot;在互联网时代，内容营销越来越重要……&quot; → 模型不知道你要说什么。
+<strong>原理：</strong> 检索命中靠语义相关，首句是答案，片段的相关度最高。</p>
+<h2>一个重要的诚实提醒（避免走向反面）</h2>
+<p>这个机制有个<strong>伦理边界</strong>，你必须清楚——因为它是这个领域最容易走歪的地方。</p>
+<p>AI 偏好&quot;看起来像事实&quot;的内容，意味着<strong>精心伪造的假数字、假来源，也可能骗过模型</strong>。但：</p>
+<ol>
+<li><strong>你的铁律</strong>（前 10 课反复强调）：<strong>严禁伪造来源和数字</strong>。这不仅是为了道德——更是因为 GEO 是长期生意。你被引用一次靠&quot;看起来可信&quot;，但被戳穿一次，可信度就归零，再难建立。</li>
+<li><strong>真正的专家靠&quot;内容本身经得起验证&quot;</strong>，而不是靠&quot;伪装成事实&quot;。你的段落应该<strong>真的</strong>有据可查、数字<strong>真的</strong>来自权威源。这样，模型引用你，是<strong>在奖励真实</strong>，而不是被欺骗。</li>
+</ol>
+<p><strong>理解机制，是为了让真实的内容被公平地看见，不是为了操纵。</strong> 这两者的分界线，就是&quot;你写的数字能不能被验证&quot;。</p>
+<h2>三个常见问题</h2>
+<p><strong>为什么统计数字能让 AI 加权？</strong> 因为模型在预训练阶段读了海量语料，归纳出&quot;带具体数字的段落往往是事实陈述&quot;这一统计规律。具体数字是模型最强的&quot;事实信号&quot;，所以排序时给这类片段加分。</p>
+<p><strong>为什么 AI 引擎偏爱权威来源？</strong> 因为指令训练（SFT + RLHF）阶段，模型被训练成&quot;引用有出处的内容会得到高分&quot;。人类标注者给&quot;引用了权威来源的回答&quot;打高分，模型学会了主动偏好有据可查的片段——有出处 &gt; 没出处。</p>
+<p><strong>AI 是怎么判断哪段内容可引用的？</strong> 三层叠加：预训练给模型&quot;数字/来源/笃定=事实&quot;的统计信号，指令训练教会它&quot;引用有出处内容&quot;，回答时又只能靠上下文学习&quot;现场对比、选看起来最可信的&quot;。AI 没法真正核实对错，只能靠&quot;哪个看起来像事实&quot;来取舍。</p>
+
+    </div>
+
+    <div class="article-footer">
+      <div><span class="mono" style="color:#28c840;">❯</span> 阅读完毕</div>
+      <div><a href="../index.html">← 返回首页</a></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleAnno(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var mark = document.getElementById(id + '-mark');
+  var isShow = el.classList.contains('show');
+  document.querySelectorAll('.anno-bubble.show').forEach(function(b) {
+    b.classList.remove('show');
+    var m = document.getElementById(b.id + '-mark');
+    if (m) m.classList.remove('open');
+  });
+  if (!isShow) {
+    el.classList.add('show');
+    if (mark) mark.classList.add('open');
+  }
+}
+// 初始化 mermaid（页面含 <pre class="mermaid"> 时才渲染）
+// 论文风配色：白底 + 低饱和分类色（蓝=内容、绿=人物、紫=机构），
+// 细边、清晰字体，节点类型用颜色区分层次而非全灰
+if (typeof mermaid !== 'undefined') {
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      // 通用
+      fontFamily: '-apple-system, "SF Pro Text", "Helvetica Neue", "PingFang SC", sans-serif',
+      fontSize: '15px',
+      lineColor: '#6e6e73',     // 箭头/连线：深灰，克制
+      textColor: '#1d1d1f',     // 节点文字：近黑
+      // 节点主色按 mermaid 类样式区分（primary/secondary/tertiary 对应不同类型）
+      primaryColor: '#e8f0fe',     // 蓝（内容实体：Article/WebSite）
+      primaryBorderColor: '#4285f4',
+      primaryTextColor: '#174ea6',
+      secondaryColor: '#e6f4ea',   // 绿（人物：Person）
+      secondaryBorderColor: '#34a853',
+      secondaryTextColor: '#0d652d',
+      tertiaryColor: '#f3e8fd',     // 紫（机构：Organization）
+      tertiaryBorderColor: '#a142f4',
+      tertiaryTextColor: '#6a1b9a',
+      // 边线粗细
+      primaryGroupBorderColor: '#4285f4',
+      secondaryGroupBorderColor: '#34a853',
+      tertiaryGroupBorderColor: '#a142f4',
+      // subgraph 背景透明
+      clusterBkg: 'transparent',
+      clusterBorder: '#d2d2d7',
+      // 标签
+      edgeLabelBackground: '#ffffff',
+    },
+  });
+}
+</script>
+
+</body>
+</html>
