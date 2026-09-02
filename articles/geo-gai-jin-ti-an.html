@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GEO 改进提案：让客户看到改完能得到什么</title>
+  <meta name="description" content="体检报告教你诊断问题，改进提案教你让客户愿意付费。诊断告诉客户&quot;你哪里不好&quot;，方案让客户看到&quot;改完能得到什么&quot;。五层结构：诊断摘要、问题清单、改进方案、优先级排期、回报预期。每个改进项都要写成价值腔——现状缺陷+影响+解法+收益。客户买的不是 llms.txt，是被 AI 推荐。">
+  <meta name="author" content="纪优">
+  <link rel="canonical" href="https://www.jiyou.site/articles/geo-gai-jin-ti-an.html">
+  <link rel="stylesheet" href="../style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@id": "https://www.jiyou.site/articles/geo-gai-jin-ti-an.html#article",
+  "@type": "Article",
+  "headline": "GEO 改进提案：让客户看到改完能得到什么",
+  "description": "体检报告教你诊断问题，改进提案教你让客户愿意付费。诊断告诉客户\"你哪里不好\"，方案让客户看到\"改完能得到什么\"。五层结构：诊断摘要、问题清单、改进方案、优先级排期、回报预期。每个改进项都要写成价值腔——现状缺陷+影响+解法+收益。客户买的不是 llms.txt，是被 AI 推荐。",
+  "author": {
+    "@id": "https://www.jiyou.site/#person"
+  },
+  "publisher": {
+    "@id": "https://www.jiyou.site/#organization"
+  },
+  "datePublished": "2026-08-30",
+  "dateModified": "2026-08-30",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://www.jiyou.site/articles/geo-gai-jin-ti-an.html"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@id": "https://www.jiyou.site/#person",
+  "@type": "Person",
+  "name": "纪优",
+  "url": "https://www.jiyou.site",
+  "description": "AI 智能体应用与生成式引擎优化（GEO）研究者",
+  "sameAs": [
+    "https://www.zhihu.com/people/yeah-98-35",
+    "https://github.com/jaykaai"
+  ],
+  "knowsAbout": [
+    "生成式引擎优化",
+    "AI 智能体应用",
+    "结构化数据",
+    "搜索引擎优化"
+  ],
+  "worksFor": {
+    "@id": "https://www.jiyou.site/#organization"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@id": "https://www.jiyou.site/#organization",
+  "@type": "Organization",
+  "name": "纪优",
+  "url": "https://www.jiyou.site",
+  "description": "AI 智能体应用与生成式引擎优化（GEO）研究者",
+  "sameAs": [
+    "https://www.zhihu.com/people/yeah-98-35",
+    "https://github.com/jaykaai"
+  ],
+  "founder": {
+    "@id": "https://www.jiyou.site/#person"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "GEO 改进提案有哪几层结构？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "五层结构层层递进，每一层都比上一层更接近客户掏钱的决定：①诊断摘要（六维雷达图 + 总分 + 一句话结论）、②问题清单（按严重度排序，每项标注是什么/在哪一环节/影响）、③改进方案（每项做什么/怎么做/预估影响）、④优先级排期（快赢项先做，长线项后做）、⑤回报预期（改完可见度和被引概率的预期提升 + 验收方法）。客户从&quot;意识到问题&quot;到&quot;算清值不值&quot;，一路被引导到付费决定。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "怎么写一条让客户愿意付费的改进项？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "用&quot;价值腔&quot;四要素：现状缺陷 → 对客户的影响（用客户听得懂的话）→ 具体解法 → 预估收益 + 见效时间。避免&quot;诊断腔&quot;（只说缺什么，客户不知道跟自己有什么关系）和&quot;方案腔&quot;（只说该做什么，没说做了能带来什么）。关键区别：好写法让客户看到的不再是&quot;技术缺项&quot;，而是&quot;我花的钱能换来被 AI 引用&quot;。客户买的是&quot;被推荐&quot;这个生意结果，不是&quot;llms.txt&quot;这个技术名词。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "改进项怎么排优先级？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "按 ROI（投入产出比）分三类。快赢项先做：低成本高回报、1-2 周见效，如 robots 放行 AI 爬虫、补 llms.txt、补 FAQ schema。稳步项其次：中等成本、1-3 个月见效，如改写自足段落、补结构化数据、加实体锚点。长线项后做：高成本需要持续投入，如内容产量提升、权威外链积累、百度百科。排期逻辑是先用快赢项让客户看到效果、建立信任，再推进大活——跟先给几个快速见效的小改进让客户尝到甜头，后面的大活才好谈。"
+      }
+    }
+  ]
+}
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+
+<div class="article-wrapper">
+  <div class="article-card">
+
+    <div class="article-topbar">
+      <div class="dots">
+        <span class="dot r"></span>
+        <span class="dot y"></span>
+        <span class="dot g"></span>
+      </div>
+      <div class="path">
+        <span class="dir">❯ GEO 实战</span>
+        <span style="color:#c7c7cc;"> / </span>
+        <span class="file">GEO 改进提案：让客户看到改完能得到什么</span>
+      </div>
+    </div>
+
+    <div class="article-body">
+      <h1>GEO 改进提案：让客户看到改完能得到什么</h1>
+      <p>上一课（六维审计）教你诊断客户站的问题。这一课教你<strong>把诊断变成客户愿意付费的方案</strong>——这是你从&quot;会审计&quot;到&quot;能交付服务&quot;的最后一环。</p>
+<p>先讲清一个关键转变：</p>
+<blockquote>
+<p>审计你在告诉客户&quot;你哪里不好&quot;（诊断）
+提案你要让客户看到&quot;改完能得到什么&quot;（方案+价值）</p>
+</blockquote>
+<p>这是&quot;体检报告&quot;和&quot;治疗方案&quot;的区别。客户不会为&quot;你有一堆问题&quot;付费，客户为&quot;我能看到改完的回报&quot;付费。</p>
+<h2>改进报告的五层结构</h2>
+<p>一份让客户愿意付费的改进报告，要从&quot;问题&quot;讲到&quot;回报&quot;，层层递进：</p>
+<pre><code>GEO 改进提案 —— 客户名
+
+① 诊断摘要    六维雷达图 + 总分 + 一句话结论
+② 问题清单    按严重度排序，每项:是什么/在哪一环节/影响
+③ 改进方案    每项:做什么/怎么做/预估影响
+④ 优先级+排期  快赢项(高ROI低成本)先做 / 长线项后做
+⑤ 回报预期    改完可见度/被引概率的预期提升 + 验收方法
+</code></pre>
+<p><strong>关键：每一层都比上一层更接近&quot;客户的钱&quot;。</strong> ①②让他意识到问题，③让他看到解法，④让他看到可执行，⑤让他算清值不值。</p>
+<h2>每个改进项的三种写法（从差到好）</h2>
+<p>这是最实操的技巧。同一个改进项，三种表达，客户反应完全不同：</p>
+<h3>差写法（诊断腔，客户不想付钱）</h3>
+<blockquote>
+<p>&quot;你的网站没有 llms.txt。&quot;</p>
+</blockquote>
+<p><strong>问题：</strong> 只说了&quot;缺什么&quot;，客户不知道这跟他有什么关系、为什么要做。</p>
+<h3>中写法（方案腔，客户开始有兴趣）</h3>
+<blockquote>
+<p>&quot;你的网站没有 llms.txt，这会让 AI 引擎来了之后不知道优先读哪篇，建议加上，列出核心文章。&quot;</p>
+</blockquote>
+<p><strong>问题：</strong> 说了&quot;该做什么、为什么&quot;，但没说&quot;做了能带来什么&quot;，价值感不足。</p>
+<h3>好写法（价值腔，客户愿意付费）</h3>
+<blockquote>
+<p>&quot;你的网站没有 llms.txt，AI 引擎（如 ChatGPT、秘塔）来了之后只能靠猜选择读什么，可能错过你最重要的文章。补一份 llms.txt（列出核心文章 + 各一句话描述），AI 就能精准读到你的精华内容，被引用的概率明显提升。这属于快赢项——一次性配置，长期收益，预估 1-2 周内见效。&quot;</p>
+</blockquote>
+<p><strong>关键：</strong> 好写法包含四要素——<strong>①现状缺陷 ②对客户的影响（用客户听得懂的话）③具体解法 ④预估收益+见效时间</strong>。客户看到的不再是&quot;技术缺项&quot;，而是&quot;我花的钱能换来被 AI 引用&quot;。</p>
+<h2>优先级：先做&quot;快赢项&quot;</h2>
+<p>改进方案不能一股脑全列，要分优先级。客户最怕的是一长串&quot;要做的清单&quot;（不知道从哪下手）。按 ROI（投入产出比）分三类：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>特征</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>快赢项（先做）</td>
+<td>低成本高回报，1-2 周见效</td>
+<td>robots 放行 AI 爬虫、补 llms.txt、补 FAQ schema</td>
+</tr>
+<tr>
+<td>稳步项（其次）</td>
+<td>中等成本，1-3 个月见效</td>
+<td>改写段落为自足段落、补结构化数据、加实体锚点</td>
+</tr>
+<tr>
+<td>长线项（后做）</td>
+<td>高成本，需要持续</td>
+<td>内容产量提升、权威外链积累、百度百科</td>
+</tr>
+</tbody></table>
+<p><strong>给客户的排期逻辑：</strong> 用&quot;快赢项&quot;先让客户看到效果、建立信任，再推进&quot;稳步项&quot;和&quot;长线项&quot;——就像先给几个快速见效的小改进让他尝到甜头，后面的大活才好谈。</p>
+<h2>一句话价值主张（提案的钩子）</h2>
+<p>在提案开头，用一句话让客户瞬间明白&quot;你花这个钱得到什么&quot;：</p>
+<blockquote>
+<p>&quot;当前 AI 引擎基本搜不到你的产品。改进后，当用户问&#39;推荐 XX 的产品&#39;时，AI 会优先推荐你。&quot;</p>
+</blockquote>
+<p>这句话把&quot;技术优化&quot;翻译成了&quot;客户最在乎的生意结果&quot;——被 AI 推荐 = 被客户看见 = 有生意。<strong>客户买的是&quot;被推荐&quot;，不是&quot;llms.txt&quot;。</strong></p>
+<h2>交付的方式（怎么交才显得专业）</h2>
+<p>改进报告不是&quot;发个文档就完事&quot;，交付方式本身也是价值：</p>
+<ol>
+<li><strong>当场演示</strong>：审计时带客户看他的 robots.txt、搜他的品牌词，让他亲眼看到问题——&quot;看到问题&quot;比&quot;你说的&quot;更有说服力。</li>
+<li><strong>分阶段交付</strong>：先给诊断（快），等确认再给完整方案（慢）——&quot;诊断免费/低价，方案付费&quot;是常见的变现路径。</li>
+<li><strong>附带验收方法</strong>：告诉客户&quot;怎么验证改好没用&quot;（比如改进后 2-4 周搜品牌词看 AI 有没有引用你），让客户能自己看到回报，容易续费和介绍。</li>
+</ol>
+<h2>GEO 改进提案有哪几层结构？</h2>
+<p>五层结构层层递进，每一层都比上一层更接近客户掏钱的决定：①诊断摘要（六维雷达图 + 总分 + 一句话结论）、②问题清单（按严重度排序，每项标注是什么/在哪一环节/影响）、③改进方案（每项做什么/怎么做/预估影响）、④优先级排期（快赢项先做，长线项后做）、⑤回报预期（改完可见度和被引概率的预期提升 + 验收方法）。客户从&quot;意识到问题&quot;到&quot;算清值不值&quot;，一路被引导到付费决定。</p>
+<h2>怎么写一条让客户愿意付费的改进项？</h2>
+<p>用&quot;价值腔&quot;四要素：现状缺陷 → 对客户的影响（用客户听得懂的话）→ 具体解法 → 预估收益 + 见效时间。避免&quot;诊断腔&quot;（只说缺什么，客户不知道跟自己有什么关系）和&quot;方案腔&quot;（只说该做什么，没说做了能带来什么）。关键区别：好写法让客户看到的不再是&quot;技术缺项&quot;，而是&quot;我花的钱能换来被 AI 引用&quot;。客户买的是&quot;被推荐&quot;这个生意结果，不是&quot;llms.txt&quot;这个技术名词。</p>
+<h2>改进项怎么排优先级？</h2>
+<p>按 ROI（投入产出比）分三类。快赢项先做：低成本高回报、1-2 周见效，如 robots 放行 AI 爬虫、补 llms.txt、补 FAQ schema。稳步项其次：中等成本、1-3 个月见效，如改写自足段落、补结构化数据、加实体锚点。长线项后做：高成本需要持续投入，如内容产量提升、权威外链积累、百度百科。排期逻辑是先用快赢项让客户看到效果、建立信任，再推进大活——跟先给几个快速见效的小改进让客户尝到甜头，后面的大活才好谈。</p>
+
+    </div>
+
+    <div class="article-footer">
+      <div><span class="mono" style="color:#28c840;">❯</span> 阅读完毕</div>
+      <div><a href="../index.html">← 返回首页</a></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleAnno(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var mark = document.getElementById(id + '-mark');
+  var isShow = el.classList.contains('show');
+  document.querySelectorAll('.anno-bubble.show').forEach(function(b) {
+    b.classList.remove('show');
+    var m = document.getElementById(b.id + '-mark');
+    if (m) m.classList.remove('open');
+  });
+  if (!isShow) {
+    el.classList.add('show');
+    if (mark) mark.classList.add('open');
+  }
+}
+// 初始化 mermaid（页面含 <pre class="mermaid"> 时才渲染）
+// 论文风配色：白底 + 低饱和分类色（蓝=内容、绿=人物、紫=机构），
+// 细边、清晰字体，节点类型用颜色区分层次而非全灰
+if (typeof mermaid !== 'undefined') {
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      // 通用
+      fontFamily: '-apple-system, "SF Pro Text", "Helvetica Neue", "PingFang SC", sans-serif',
+      fontSize: '15px',
+      lineColor: '#6e6e73',     // 箭头/连线：深灰，克制
+      textColor: '#1d1d1f',     // 节点文字：近黑
+      // 节点主色按 mermaid 类样式区分（primary/secondary/tertiary 对应不同类型）
+      primaryColor: '#e8f0fe',     // 蓝（内容实体：Article/WebSite）
+      primaryBorderColor: '#4285f4',
+      primaryTextColor: '#174ea6',
+      secondaryColor: '#e6f4ea',   // 绿（人物：Person）
+      secondaryBorderColor: '#34a853',
+      secondaryTextColor: '#0d652d',
+      tertiaryColor: '#f3e8fd',     // 紫（机构：Organization）
+      tertiaryBorderColor: '#a142f4',
+      tertiaryTextColor: '#6a1b9a',
+      // 边线粗细
+      primaryGroupBorderColor: '#4285f4',
+      secondaryGroupBorderColor: '#34a853',
+      tertiaryGroupBorderColor: '#a142f4',
+      // subgraph 背景透明
+      clusterBkg: 'transparent',
+      clusterBorder: '#d2d2d7',
+      // 标签
+      edgeLabelBackground: '#ffffff',
+    },
+  });
+}
+</script>
+
+</body>
+</html>
